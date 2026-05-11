@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - Warehouse Management</title>
+
+  <!-- Using Tailwind JIT via CDN for immediate development, but will be ready for CLI output.css -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+
+  <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+  <link rel="stylesheet" href="~/WarehouseManagement.Web.Mvc.styles.css" asp-append-version="true" />
+</head>
+
+<body class="min-h-screen bg-base-200">
+  <header>
+    <div class="navbar bg-base-100 shadow-md px-4 lg:px-8">
+      <div class="flex-1">
+        <a class="btn btn-ghost text-xl font-bold" asp-area="" asp-controller="Home" asp-action="Index">
+          <span class="text-primary">Warehouse</span>Management
+        </a>
+      </div>
+      <div class="flex-none hidden lg:block">
+        <ul class="menu menu-horizontal px-1 gap-2">
+          <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
+          <li><a asp-controller="Inventory" asp-action="Index">Inventory</a></li>
+          <li><a asp-controller="Warehouse" asp-action="Index">Warehouses</a></li>
+          <li><a asp-controller="Product" asp-action="Index">Product</a></li>
+        </ul>
+      </div>
+      <div class="flex-none">
+        <div class="dropdown dropdown-end">
+          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+            <div class="w-10 rounded-full">
+              <img alt="User profile" src="https://ui-avatars.com/api/?name=Admin+User&background=random" />
+            </div>
+          </div>
+          <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+            <li><a>Profile</a></li>
+            <li><a>Settings</a></li>
+            <li><a>Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 py-8">
+    <main role="main" class="min-h-[70vh]">
+      @RenderBody()
+    </main>
+  </div>
+
+  <footer class="footer footer-center p-10 bg-base-100 text-base-content rounded border-t border-base-300">
+    <nav class="grid grid-flow-col gap-4">
+      <a class="link link-hover" asp-controller="Home" asp-action="Index">Home</a>
+      <a class="link link-hover" asp-controller="Home" asp-action="Privacy">Privacy</a>
+      <a class="link link-hover">Support</a>
+    </nav>
+    <aside>
+      <p>&copy; 2026 - Warehouse Management System - <span class="font-semibold">Logistics Pro</span></p>
+    </aside>
+  </footer>
+
+  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+  <script src="~/js/site.js" asp-append-version="true"></script>
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

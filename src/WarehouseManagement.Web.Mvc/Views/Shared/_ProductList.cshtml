@@ -1,0 +1,80 @@
+@model IEnumerable<WarehouseManagement.Application.ViewModels.ListProductViewModel>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  @foreach (var product in Model)
+  {
+    <div class="card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
+      <div class="card-body p-5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-semibold bg-secondary/10 text-secondary px-2 py-0.5 rounded">SKU: @product.SKU</span>
+        </div>
+        <h3 class="font-bold text-sm leading-tight h-10 overflow-hidden text-ellipsis">@product.Name</h3>
+
+        <div class="flex flex-col gap-1 mt-3">
+          <div class="flex justify-between text-xs">
+            <span class="text-secondary">Reorder Level:</span>
+            <span class="font-bold">@product.ReorderLevel</span>
+          </div>
+        </div>
+
+        <div class="card-actions justify-between items-center mt-4">
+          <div class="text-[10px] text-secondary font-mono">ID: @product.Id.ToString().Substring(0, 8)...</div>
+          <button class="btn btn-secondary btn-xs btn-outline" onclick="openProductModal('@product.Id')">Details</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+
+<!-- Unique ID for Product Modal -->
+<dialog id="product_modal" class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <div id="product_modal_content">
+      <div class="flex flex-col items-center py-10">
+        <span class="loading loading-spinner loading-lg text-secondary"></span>
+        <p class="mt-4 text-sm opacity-50">Loading product details...</p>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<script>
+  function openProductModal(id) {
+    const modal = document.getElementById('product_modal');
+    const content = document.getElementById('product_modal_content');
+
+    content.innerHTML = `
+      <div class="flex flex-col items-center py-10">
+        <span class="loading loading-spinner loading-lg text-secondary"></span>
+        <p class="mt-4 text-sm opacity-50">Loading product details...</p>
+      </div>
+    `;
+
+    modal.showModal();
+
+    // Correct route: /Product/ProductDetails/
+    fetch(`/Product/ProductDetails/${id}`)
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.text();
+      })
+      .then(html => {
+        content.innerHTML = html;
+      })
+      .catch(error => {
+        content.innerHTML = `
+          <div class="alert alert-error">
+            <span>Error loading product. Please try again.</span>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+  }
+</script>

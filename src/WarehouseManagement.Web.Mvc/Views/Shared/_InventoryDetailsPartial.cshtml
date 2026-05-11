@@ -1,0 +1,46 @@
+@model WarehouseManagement.Application.ViewModels.InventoryViewModel
+
+<div class="space-y-6">
+  <div>
+    <h2 class="text-2xl font-bold text-primary">@Model.ProductName</h2>
+    <div class="badge badge-outline badge-sm mt-1">@Model.WarehouseName</div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-base-200 p-4 rounded-lg">
+      <div class="text-xs opacity-60 uppercase font-bold">Quantity On Hand</div>
+      <div class="text-3xl font-black">@Model.QuantityOnHand</div>
+    </div>
+    <div class="bg-base-200 p-4 rounded-lg">
+      <div class="text-xs opacity-60 uppercase font-bold text-secondary">Allocated</div>
+      <div class="text-3xl font-black text-secondary">@Model.QuantityAllocated</div>
+    </div>
+  </div>
+
+  <div class="divider m-0"></div>
+
+  <div class="space-y-3">
+    <div class="flex justify-between text-sm">
+      <span class="opacity-60">Product SKU:</span>
+      <span class="font-mono">@Model.ProductId.ToString().Substring(0, 8)...</span>
+    </div>
+    <div class="flex justify-between text-sm">
+      <span class="opacity-60">Warehouse Location:</span>
+      <span class="font-semibold">@Model.WarehouseName</span>
+    </div>
+    @{
+      var available = Model.QuantityOnHand - Model.QuantityAllocated;
+      var status = available > 20 ? "Healthy" : (available > 0 ? "Low Stock" : "Critical");
+      var statusColor = available > 20 ? "text-success" : (available > 0 ? "text-warning" : "text-error");
+    }
+    <div class="flex justify-between text-sm">
+      <span class="opacity-60">Available Stock:</span>
+      <span class="font-bold @statusColor">@available (@status)</span>
+    </div>
+  </div>
+
+  <div class="modal-action">
+    <button class="btn btn-outline btn-sm">Adjust</button>
+    <button class="btn btn-primary btn-sm" onclick="inventory_modal.close()">Close</button>
+  </div>
+</div>

@@ -1,0 +1,29 @@
+@model WarehouseManagement.Application.ViewModels.ProductByIdViewModel;
+
+<div class="space-y-6">
+  <div>
+    <h2 class="text-2xl font-bold text-primary">@Model.Name</h2>
+    <div class="badge badge-outline badge-sm mt-1">@Model.Name</div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-4">
+    <div class="bg-base-200 p-4 rounded-lg">
+      <div class="text-xs opacity-60 uppercase font-bold">Reorder Level</div>
+      <div class="text-3xl font-black">@Model.ReorderLevel</div>
+    </div>
+  </div>
+
+  <div class="divider m-0"></div>
+
+  <div class="space-y-3">
+    <div class="flex justify-between text-sm">
+      <span class="opacity-60">Product SKU:</span>
+      <span class="font-mono">@Model.Id.ToString().Substring(0, 8)...</span>
+    </div>
+  </div>
+
+  <div class="modal-action">
+    <button class="btn btn-outline btn-sm">Adjust</button>
+    <button class="btn btn-primary btn-sm" onclick="inventory_modal.close()">Close</button>
+  </div>
+</div>

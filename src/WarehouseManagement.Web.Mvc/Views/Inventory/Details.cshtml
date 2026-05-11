@@ -1,0 +1,73 @@
+@model WarehouseManagement.Application.ViewModels.InventoryViewModel
+@{
+  ViewData["Title"] = "Inventory Details";
+}
+
+<div class="max-w-4xl mx-auto space-y-8">
+  <div class="flex items-center gap-4">
+    <a asp-action="Index" class="btn btn-ghost btn-circle">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+    </a>
+    <h1 class="text-3xl font-bold">Inventory Details</h1>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <!-- Main Info Card -->
+    <div class="lg:col-span-2 card bg-base-100 shadow-xl border border-base-200">
+      <div class="card-body">
+        <h2 class="card-title text-2xl mb-4">@Model.ProductName</h2>
+        
+        <div class="grid grid-cols-2 gap-y-6 gap-x-4">
+          <div>
+            <div class="text-sm opacity-60 uppercase font-bold tracking-wider">Product ID</div>
+            <div class="font-mono text-sm">@Model.ProductId</div>
+          </div>
+          <div>
+            <div class="text-sm opacity-60 uppercase font-bold tracking-wider">Warehouse</div>
+            <div class="font-semibold text-primary">@Model.WarehouseName</div>
+          </div>
+          <div class="col-span-2 divider m-0"></div>
+          <div>
+            <div class="text-sm opacity-60 uppercase font-bold tracking-wider">Quantity On Hand</div>
+            <div class="text-4xl font-black mt-1">@Model.QuantityOnHand</div>
+          </div>
+          <div>
+            <div class="text-sm opacity-60 uppercase font-bold tracking-wider">Quantity Allocated</div>
+            <div class="text-4xl font-black mt-1 text-secondary">@Model.QuantityAllocated</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats & Actions Card -->
+    <div class="space-y-6">
+      <div class="card bg-primary text-primary-content shadow-xl">
+        <div class="card-body">
+          <h2 class="card-title">Stock Status</h2>
+          @{
+            var available = Model.QuantityOnHand - Model.QuantityAllocated;
+            var status = available > 20 ? "Healthy" : (available > 0 ? "Low" : "Out of Stock");
+          }
+          <div class="stat p-0">
+            <div class="stat-value text-primary-content">@available</div>
+            <div class="stat-desc text-primary-content opacity-80">Available Units</div>
+          </div>
+          <div class="badge badge-outline mt-2">@status</div>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body">
+          <h3 class="font-bold mb-4">Quick Actions</h3>
+          <div class="flex flex-col gap-2">
+            <button class="btn btn-outline btn-sm">Adjust Stock</button>
+            <button class="btn btn-outline btn-sm">Transfer Items</button>
+            <button class="btn btn-outline btn-sm btn-error">Report Issue</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

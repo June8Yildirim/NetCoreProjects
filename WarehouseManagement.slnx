@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WarehouseManagement.Application/WarehouseManagement.Application.csproj" />
+    <Project Path="src/WarehouseManagement.Core/WarehouseManagement.Core.csproj" />
+    <Project Path="src/WarehouseManagement.EntityFrameworkCore/WarehouseManagement.EntityFrameworkCore.csproj" />
+    <Project Path="src/WarehouseManagement.Web.Mvc/WarehouseManagement.Web.Mvc.csproj" />
+  </Folder>
+</Solution>
