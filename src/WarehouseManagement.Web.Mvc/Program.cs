@@ -7,7 +7,14 @@ using WarehouseManagement.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddRazorOptions(options =>
+    {
+      options.ViewLocationFormats.Add("/Views/Shared/Dashboard/{0}.cshtml");
+      options.ViewLocationFormats.Add("/Views/Shared/Inventory/{0}.cshtml");
+      options.ViewLocationFormats.Add("/Views/Shared/Product/{0}.cshtml");
+      options.ViewLocationFormats.Add("/Views/Shared/Warehouse/{0}.cshtml");
+    });
 
 builder.Services.AddDbContext<WarehouseDbContext>(options =>
 {
