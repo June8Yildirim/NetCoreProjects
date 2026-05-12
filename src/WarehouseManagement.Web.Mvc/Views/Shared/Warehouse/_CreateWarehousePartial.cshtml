@@ -1,0 +1,53 @@
+@model WarehouseManagement.Application.ViewModels.Warehouse.Create.CreateWarehouseViewModel
+
+<form asp-action="Create" method="post" id="createWarehouseForm" class="space-y-4">
+  <div asp-validation-summary="ModelOnly" class="alert alert-error mb-4"></div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="form-control w-full">
+      <label asp-for="Name" class="label">
+        <span class="label-text font-bold">Warehouse Name</span>
+      </label>
+      <input asp-for="Name" class="input input-bordered w-full" placeholder="e.g. Central Hub" />
+      <span asp-validation-for="Name" class="text-error text-sm mt-1"></span>
+    </div>
+
+    <div class="form-control w-full">
+      <label asp-for="WarehouseCode" class="label">
+        <span class="label-text font-bold">Warehouse Code</span>
+      </label>
+      <input asp-for="WarehouseCode" class="input input-bordered w-full" placeholder="e.g. WH-001" />
+      <span asp-validation-for="WarehouseCode" class="text-error text-sm mt-1"></span>
+    </div>
+
+    <div class="form-control w-full">
+      <label asp-for="CapacitySquareFeet" class="label">
+        <span class="label-text font-bold">Capacity (Sq Ft)</span>
+      </label>
+      <input asp-for="CapacitySquareFeet" type="number" class="input input-bordered w-full" placeholder="e.g. 50000" />
+      <span asp-validation-for="CapacitySquareFeet" class="text-error text-sm mt-1"></span>
+    </div>
+
+    <div class="form-control w-full">
+      <label asp-for="CurrentUtilizationPercent" class="label">
+        <span class="label-text font-bold">Utilization (%)</span>
+      </label>
+      <input asp-for="CurrentUtilizationPercent" type="number" step="0.01" class="input input-bordered w-full"
+             placeholder="e.g. 75.0" />
+      <span asp-validation-for="CurrentUtilizationPercent" class="text-error text-sm mt-1"></span>
+    </div>
+
+    <div class="form-control w-full md:col-span-2">
+      <label asp-for="Timezone" class="label">
+        <span class="label-text font-bold">Timezone</span>
+      </label>
+      <input asp-for="Timezone" class="input input-bordered w-full" placeholder="e.g. UTC, EST, PST" />
+      <span asp-validation-for="Timezone" class="text-error text-sm mt-1"></span>
+    </div>
+  </div>
+
+  <div class="modal-action mt-6">
+    <button type="button" onclick="create_warehouse_modal.close()" class="btn btn-ghost">Cancel</button>
+    <button type="submit" class="btn btn-primary px-8">Save Warehouse</button>
+  </div>
+</form>

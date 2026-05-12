@@ -34,12 +34,12 @@
             <span class="text-sm opacity-70">@warehouse.TotalInventories</span>
           </td>
           <td>
-            <div class="badge @warehouse.FromTransfers.Count badge-sm font-semibold">
-              @(warehouse.ToTransfers.Count > 10 ? "Valet" : (warehouse.FromTransfers.Count > 50 ? "King" : "Queen"))
+            <div class="badge @(warehouse.FromTransfers?.Count ?? 0) badge-sm font-semibold">
+              @((warehouse.ToTransfers?.Count ?? 0) > 10 ? "Valet" : ((warehouse.FromTransfers?.Count ?? 0) > 50 ? "King" : "Queen"))
             </div>
             <progress
-            class="progress @(warehouse.FromTransfers.Count > 10 ? "progress-error" : "progress-success") w-20 block mt-1"
-            max="100" value="@warehouse.FromTransfers.Count"></progress>
+            class="progress @((warehouse.FromTransfers?.Count ?? 0) > 10 ? "progress-error" : "progress-success") w-20 block mt-1"
+            max="100" value="@(warehouse.FromTransfers?.Count ?? 0)"></progress>
           </td>
           <td>
             <div class="flex gap-2">

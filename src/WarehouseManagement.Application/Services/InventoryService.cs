@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using WarehouseManagement.Application.ViewModels;
 using WarehouseManagement.Data;
 using WarehouseManagement.Models;
@@ -6,19 +7,31 @@ using WarehouseManagement.Models;
 namespace WarehouseManagement.Application.Services;
 
 
+/// <summary>
+/// This class is the actual implementation of the IInventoryService.
+/// It uses Entity Framework (WarehouseDbContext) to talk to the physical database.
+/// </summary>
 public class InventoryService : IInventoryService
 {
   private readonly WarehouseDbContext _context;
 
+  /// <summary>
+  /// The constructor "injects" the database context so we can use it.
+  /// </summary>
   public InventoryService(WarehouseDbContext context)
   {
     _context = context;
   }
+
+  /// <summary>
+  /// Fetches 3 records. We use .AsNoTracking() here because we are only 
+  /// reading data for display, which makes the query faster and saves memory.
+  /// </summary>
   public async Task<List<ListInventoryViewModel>> GetList3InventoryAsync()
   {
     return await _context.Inventories
-      .Include(i => i.Product)
-      .Include(i => i.Warehouse)
+      .Include(i => i.Product)   // Tell EF to load the Product info too
+      .Include(i => i.Warehouse) // Tell EF to load the Warehouse info too
       .AsNoTracking()
       .Take(3)
       .Select(i => new ListInventoryViewModel
@@ -33,6 +46,11 @@ public class InventoryService : IInventoryService
       })
     .ToListAsync();
   }
+
+  /// <summary>
+  /// Fetches all records. We "Select" them into a ViewModel to ensure the 
+  /// View only receives the exact data it needs to show the table.
+  /// </summary>
   public async Task<List<ListInventoryViewModel>> GetListInventoryAsync()
   {
     return await _context.Inventories
@@ -51,6 +69,9 @@ public class InventoryService : IInventoryService
       }).ToListAsync();
   }
 
+  /// <summary>
+  /// Finds one record. This is a "surgical" query to get a single row.
+  /// </summary>
   public async Task<InventoryViewModel?> GetInventoryByIdAsync(Guid id)
   {
     return await _context.Inventories
@@ -68,8 +89,67 @@ public class InventoryService : IInventoryService
       }).FirstOrDefaultAsync();
   }
 
+  /// <summary>
+  /// Database total counter.
+  /// </summary>
   public async Task<int> GetTotalInventoriesCountAsync()
   {
     return await _context.Inventories.CountAsync();
+  }
+
+  /// <summary>
+  /// This method is like a "Shopping List Generator". 
+  /// Before the user can add inventory, they need to know what Products 
+  /// and Warehouses exist. We fetch them here and format them into SelectListItems.
+  /// </summary>
+  public async Task<CreateInventoryViewModel> CreateInventoryViewModelAsync()
+  {
+    // Fetch all products and turn them into text/value pairs for a dropdown
+    var products = await _context.Products
+        .AsNoTracking()
+        .Select(p => new SelectListItem
+        {
+          Value = p.Id.ToString(),
+          Text = $"{p.SKU} - {p.Name}"
+        })
+        .ToListAsync();
+
+    // Fetch all warehouses and turn them into text/value pairs for a dropdown
+    var warehouses = await _context.Warehouses
+        .AsNoTracking()
+        .Select(w => new SelectListItem
+        {
+          Value = w.Id.ToString(),
+          Text = w.Name
+        })
+        .ToListAsync();
+
+    // Return the "Empty Form" with the dropdown lists filled
+    return new CreateInventoryViewModel
+    {
+      Products = products,
+      Warehouses = warehouses
+    };
+  }
+
+  /// <summary>
+  /// This is the final step of the "Create" process.
+  /// We take the raw form data (the ViewModel) and convert it into a 
+  /// real database entity (the Model) to be saved permanently.
+  /// </summary>
+  public async Task CreateInventoryAsync(CreateInventoryViewModel model)
+  {
+    var inventory = new Inventory
+    {
+      ProductId = model.ProductId,
+      WarehouseId = model.WarehouseId,
+      QuantityOnHand = model.QuantityOnHand,
+      MinSafetyStock = model.MinSafetyStock,
+      QuantityAllocated = 0, // New items start with 0 allocated
+      LastCounted = DateTime.UtcNow // Set initial count date
+    };
+
+    _context.Inventories.Add(inventory);
+    await _context.SaveChangesAsync();
   }
 }

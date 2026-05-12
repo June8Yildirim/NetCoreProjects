@@ -1,12 +1,18 @@
 
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WarehouseManagement.Application.ViewModels;
+using WarehouseManagement.Application.ViewModels.Product.Create;
 using WarehouseManagement.Data;
 using WarehouseManagement.Models;
 
 namespace WarehouseManagement.Application.Services;
 
 
+/// <summary>
+/// This class is the actual logic for the Product Service.
+/// It uses Entity Framework (WarehouseDbContext) to interact with the database.
+/// </summary>
 public class ProductService : IProductService
 {
   private readonly WarehouseDbContext _context;
@@ -16,6 +22,9 @@ public class ProductService : IProductService
     _context = context;
   }
 
+  /// <summary>
+  /// Optimized query to get just 3 products for the Dashboard view.
+  /// </summary>
   public async Task<List<ListProductViewModel>> Get3ProductsList()
   {
     return await _context.Products
@@ -31,6 +40,10 @@ public class ProductService : IProductService
       }).ToListAsync();
   }
 
+  /// <summary>
+  /// Fetches all products and includes extra info like Supplier Name.
+  /// This is used for the main Product Management table.
+  /// </summary>
   public async Task<List<ListProductViewModel>> GetAllProductsList()
   {
     return await _context.Products
@@ -50,6 +63,9 @@ public class ProductService : IProductService
       }).ToListAsync();
   }
 
+  /// <summary>
+  /// Fetches details for a single product.
+  /// </summary>
   public async Task<ProductByIdViewModel?> GetProductByIdAsync(Guid Id)
   {
     return await _context.Products
@@ -66,8 +82,52 @@ public class ProductService : IProductService
       .FirstOrDefaultAsync();
   }
 
+  /// <summary>
+  /// Database total counter.
+  /// </summary>
   public async Task<int> GetTotalProductsCountAsync()
   {
     return await _context.Products.CountAsync();
+  }
+
+  /// <summary>
+  /// Prepares the form for a new product by fetching all current Suppliers
+  /// so they can be shown in the "Supplier" dropdown list.
+  /// </summary>
+  public async Task<CreateProductViewModel> CreateProductViewModelAsync()
+  {
+    var suppliers = await _context.Suppliers
+      .AsNoTracking()
+      .Select(s => new SelectListItem
+      {
+        Value = s.Id.ToString(),
+        Text = $"{s.Id} - {s.Name}"
+      }).ToListAsync();
+
+    return new CreateProductViewModel
+    {
+      Suppliers = suppliers
+    };
+  }
+
+  /// <summary>
+  /// The final save step. It maps the form data into a real database row.
+  /// </summary>
+  public async Task CreateProductAsync(CreateProductViewModel model)
+  {
+    var product = new WarehouseManagement.Models.Product
+    {
+      Name = model.Name,
+      SKU = model.SKU,
+      ReorderLevel = model.ReorderLevel,
+      UnitCost = model.UnitCost,
+      WeightLbs = model.WeightLbs,
+      Category = model.Category,
+      Barcode = model.Barcode,
+      SupplierId = model.SupplierId
+    };
+
+    _context.Products.Add(product);
+    await _context.SaveChangesAsync();
   }
 }

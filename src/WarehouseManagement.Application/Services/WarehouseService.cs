@@ -1,6 +1,8 @@
 using WarehouseManagement.Application.ViewModels;
 using WarehouseManagement.Data;
 using Microsoft.EntityFrameworkCore;
+using WarehouseManagement.Application.ViewModels.Warehouse.Create;
+using WarehouseManagement.Models;
 
 namespace WarehouseManagement.Application.Services;
 
@@ -44,7 +46,7 @@ public class WarehouseService : IWarehouseService
       }).ToListAsync();
   }
 
-  public async Task<WarehouseByIdViewModel> GetWarehouseByIdViewModelAsync(Guid Id)
+  public async Task<WarehouseByIdViewModel?> GetWarehouseByIdViewModelAsync(Guid Id)
   {
     return await _context.Warehouses
       .AsNoTracking()
@@ -64,8 +66,36 @@ public class WarehouseService : IWarehouseService
     .FirstOrDefaultAsync();
   }
 
+  /// <summary>
+  /// Database total counter.
+  /// </summary>
   public async Task<int> GetTotalWarehousesCountAsync()
   {
     return await _context.Warehouses.CountAsync();
+  }
+
+  /// <summary>
+  /// Prepares an empty form for creating a new warehouse.
+  /// </summary>
+  public Task<CreateWarehouseViewModel> CreateWarehouseViewModelAsync()
+  {
+    return Task.FromResult(new CreateWarehouseViewModel());
+  }
+
+  /// <summary>
+  /// Saves the new warehouse to the database.
+  /// </summary>
+  public async Task CreateWarehouseAsync(CreateWarehouseViewModel model)
+  {
+    var warehouse = new Warehouse
+    {
+      Name = model.Name,
+      CapacitySquareFeet = model.CapacitySquareFeet,
+      Timezone = model.Timezone,
+      WarehouseCode = model.WarehouseCode,
+      CurrentUtilizationPercent = model.CurrentUtilizationPercent
+    };
+    _context.Warehouses.Add(warehouse);
+    await _context.SaveChangesAsync();
   }
 }

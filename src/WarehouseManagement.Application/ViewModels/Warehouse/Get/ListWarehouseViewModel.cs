@@ -10,7 +10,7 @@ public class ListWarehouseViewModel
   public int CapacitySquareFeet { get; set; }
   public int TotalInventories { get; set; }
   public int TotalUsers { get; set; }
-  public ICollection<Transfer> FromTransfers { get; set; }
-  public ICollection<Transfer> ToTransfers { get; set; }
+  public ICollection<Transfer>? FromTransfers { get; set; }
+  public ICollection<Transfer>? ToTransfers { get; set; }
 
 }

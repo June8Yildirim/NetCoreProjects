@@ -3,6 +3,8 @@ using WarehouseManagement.Application.Services;
 using WarehouseManagement.Core;
 using WarehouseManagement.EntityFrameworkCore;
 using WarehouseManagement.Data;
+using WarehouseManagement.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +20,18 @@ builder.Services.AddControllersWithViews()
 
 builder.Services.AddDbContext<WarehouseDbContext>(options =>
 {
-  var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+  var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+      ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
   options.UseMySQL(connectionString);
 });
+
+builder.Services.AddIdentity<User, IdentityRole<Guid>>(opt =>
+{
+  opt.Password.RequireDigit = true;
+  opt.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<WarehouseDbContext>()
+  .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IWarehouseService, WarehouseService>();
 builder.Services.AddScoped<IProductService, ProductService>();

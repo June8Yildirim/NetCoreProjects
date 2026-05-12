@@ -1,43 +1,27 @@
 using System;
 using System.Collections.Generic;
-using WarehouseManagement.Models.Base;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace WarehouseManagement.Models
 {
-  public class User : BaseEntity
+  public class User : IdentityUser<Guid>
   {
+    [Required]
     public string Name { get; set; } = string.Empty;
-    public string Position { get; set; } = string.Empty;
-    public Guid WarehouseId { get; set; }
-    public string? Email { get; set; }
 
+    [Required]
+    public string Position { get; set; } = "Employee";
+
+    public Guid WarehouseId { get; set; }
+    
     // Navigation properties
     public virtual Warehouse Warehouse { get; set; } = null!;
     public virtual ICollection<StockTracking> StockTrackings { get; set; } = new List<StockTracking>();
+    
+    // Manual audit fields (since we can't inherit from BaseEntity and IdentityUser at the same time)
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
+    public bool IsActive { get; set; } = true;
   }
 }
-// namespace WarehouseManagement.Core;
-//
-// using System.ComponentModel.DataAnnotations;
-//
-//
-// public class User
-// {
-//   [Key]
-//   public Guid Id { get; set; }
-//
-//   [Required]
-//   public string Name { get; set; }
-//
-//   [Required]
-//   public string position { get; set; }
-//
-//   [Required]
-//   public Guid WarehouseId { get; set; }
-//
-//   public List<Permission> Permissions { get; set; } = new();
-//   public User()
-//   {
-//     Id = Guid.NewGuid();
-//   }
-// }

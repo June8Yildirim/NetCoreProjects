@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using WarehouseManagement.Application.Services;
+using WarehouseManagement.Application.ViewModels;
 using WarehouseManagement.Web.Mvc.Models;
 
 namespace WarehouseManagement.Web.Mvc.Controllers;
@@ -42,6 +43,45 @@ public class InventoryController : Controller
       return NotFound();
     }
     return PartialView("_InventoryDetailsPartial", item);
+  }
+
+  [HttpGet]
+  public async Task<IActionResult> Create()
+  {
+    var viewModel = await _inventoryService.CreateInventoryViewModelAsync();
+    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+    {
+      return PartialView("_CreateInventoryPartial", viewModel);
+    }
+    return View(viewModel);
+  }
+
+  [HttpPost]
+  [ValidateAntiForgeryToken]
+  public async Task<IActionResult> Create(CreateInventoryViewModel model)
+  {
+    if (ModelState.IsValid)
+    {
+      await _inventoryService.CreateInventoryAsync(model);
+      if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+      {
+        return Json(new { success = true });
+      }
+      return RedirectToAction(nameof(Index));
+    }
+
+    var viewModel = await _inventoryService.CreateInventoryViewModelAsync();
+    // Re-populate data if validation fails
+    viewModel.ProductId = model.ProductId;
+    viewModel.WarehouseId = model.WarehouseId;
+    viewModel.QuantityOnHand = model.QuantityOnHand;
+    viewModel.MinSafetyStock = model.MinSafetyStock;
+
+    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+    {
+      return PartialView("_CreateInventoryPartial", viewModel);
+    }
+    return View(viewModel);
   }
 
 

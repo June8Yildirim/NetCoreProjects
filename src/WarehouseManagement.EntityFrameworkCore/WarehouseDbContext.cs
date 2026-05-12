@@ -183,13 +183,13 @@ namespace WarehouseManagement.Data
       // Seed Users (from your JSON)
       var users = new[]
       {
-                new User { Id = Guid.Parse("2f408d44-a9e1-4cd8-9c16-0f115bd78e60"),
+                new User{ Id = Guid.Parse("2f408d44-a9e1-4cd8-9c16-0f115bd78e60"),
                     Name = "Robert Chen", Position = "Inventory Specialist",
                     WarehouseId = Guid.Parse("87261fbf-f45e-4f37-bce9-0ca4108311d2") },
-                new User { Id = Guid.Parse("393e4fa6-84a0-4ea2-990a-d2ab42c641ca"),
+                new User{ Id = Guid.Parse("393e4fa6-84a0-4ea2-990a-d2ab42c641ca"),
                     Name = "John Smith", Position = "Regional Manager",
                     WarehouseId = Guid.Parse("93b76b44-5c36-4e0f-9936-01ef16359b5d") },
-                new User { Id = Guid.Parse("799cd594-ac79-4436-abf3-2a1a57d76860"),
+                new User{ Id = Guid.Parse("799cd594-ac79-4436-abf3-2a1a57d76860"),
                     Name = "Maria Garcia", Position = "Warehouse Lead",
                     WarehouseId = Guid.Parse("f07f2d6e-5176-47c8-bd34-46499b30556d") }
             };
