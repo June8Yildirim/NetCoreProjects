@@ -1,54 +1,28 @@
 @model IEnumerable<WarehouseManagement.Application.ViewModels.ListProductViewModel>
 
-<div class="overflow-x-auto bg-base-100 rounded-xl shadow-xl border border-base-200">
-  <table class="table table-zebra w-full">
-    <thead>
-      <tr class="bg-base-200 text-base-content/70">
-        <th>Product</th>
-        <th>Category</th>
-        <th>Supplier Name</th>
-        <th>SKU</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach (var product in Model)
-      {
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  @foreach (var product in Model)
+  {
+    <div class="card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
+      <div class="card-body p-5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-semibold bg-secondary/10 text-secondary px-2 py-0.5 rounded">SKU: @product.SKU</span>
+        </div>
+        <h3 class="font-bold text-xs leading-tight overflow-hidden text-ellipsis">@product.Name</h3>
 
-        <tr class="hover">
-          <td>
-            <div>
-              <div class="font-bold">@product.Name</div>
-              <div class="text-[10px] opacity-50 font-mono">ID: @product.Id.ToString().Substring(0, 8)</div>
-            </div>
-          </td>
-          <td>
-            <div class="badge badge-ghost">@product.Category </div>
-          </td>
-          <td>
-            <span class="font-mono text-xs font-thin ">@product.SupplierName</span>
-          </td>
-          <td>
-            <span class="text-sm opacity-70">@product.SKU</span>
-          </td>
-          <td>
-            <div class="badge @product.ReorderLevel badge-sm font-semibold">
-              @(product.ReorderLevel > 10 ? "Valet" : (product.ReorderLevel > 50 ? "King" : "Queen"))
-            </div>
-            <progress
-            class="progress @( product.ReorderLevel > 10 ? "progress-error" : "progress-success") w-20 block mt-1"
-            max="100" value="@product.UnitCost"></progress>
-          </td>
-          <td>
-            <div class="flex gap-2">
-              <button class="btn btn-primary btn-xs" onclick="openProductModal('@product.Id')">Details</button>
-            </div>
-          </td>
-        </tr>
-      }
-    </tbody>
-  </table>
+        <div class="flex flex-col gap-1">
+          <div class="flex justify-between text-xs">
+            <span class="text-secondary">Reorder Level:</span>
+            <span class="font-bold">@product.ReorderLevel</span>
+          </div>
+        </div>
+
+        <div class="card-actions justify-between items-center mt-1">
+          <button class="btn btn-secondary btn-xs btn-outline" onclick="openProductModal('@product.Id')">Details</button>
+        </div>
+      </div>
+    </div>
+  }
 </div>
 
 

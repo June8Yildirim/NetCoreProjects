@@ -12,9 +12,15 @@ public class InventoryController : Controller
   {
     _inventoryService = service;
   }
-  public IActionResult Index()
+  public async Task<IActionResult> Index()
   {
-    return View();
+    var inventories = await _inventoryService.GetListInventoryAsync();
+    if (inventories == null)
+    {
+      return NotFound();
+    }
+
+    return View(inventories);
   }
 
   public async Task<IActionResult> Details(Guid Id)

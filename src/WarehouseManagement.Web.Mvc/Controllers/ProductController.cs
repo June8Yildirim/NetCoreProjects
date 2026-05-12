@@ -13,9 +13,14 @@ public class ProductController : Controller
   {
     _productService = service;
   }
-  public IActionResult Index()
+  public async Task<IActionResult> Index()
   {
-    return View();
+    var productList = await _productService.GetAllProductsList();
+    if (productList == null)
+    {
+      return NotFound();
+    }
+    return View(productList);
   }
 
   [HttpGet]

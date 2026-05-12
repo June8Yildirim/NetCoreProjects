@@ -75,7 +75,7 @@
   function openInventoryModal(id) {
     const modal = document.getElementById('inventory_modal');
     const content = document.getElementById('modal_content');
-    
+
     // Reset content to loader
     content.innerHTML = `
       <div class="flex flex-col items-center py-10">
@@ -83,9 +83,9 @@
         <p class="mt-4 text-sm opacity-50">Loading details...</p>
       </div>
     `;
-    
+
     modal.showModal();
-    
+
     // Fetch details
     fetch(`/Inventory/GetDetailsPartial/${id}`)
       .then(response => {

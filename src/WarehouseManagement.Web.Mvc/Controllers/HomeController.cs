@@ -19,15 +19,22 @@ public class HomeController : Controller
   }
   public async Task<IActionResult> Index()
   {
-    var warehouses = await _warehouseService.GetAllWarehousesAsync();
-    var products = await _productService.GetAllProductsList();
-    var inventories = await _inventoryService.GetListInventoryAsync();
+    var threeWarehouses = await _warehouseService.Get3WarehousesAsync();
+    var threeProducts = await _productService.Get3ProductsList();
+    var threeInventories = await _inventoryService.GetList3InventoryAsync();
+
+    var totalWarehouses = await _warehouseService.GetTotalWarehousesCountAsync();
+    var totalProducts = await _productService.GetTotalProductsCountAsync();
+    var totalInventories = await _inventoryService.GetTotalInventoriesCountAsync();
 
     var homeModels = new HomeContentViewModel
     {
-      Warehouses = warehouses,
-      Products = products,
-      Inventories = inventories
+      ThreeWarehouses = threeWarehouses,
+      ThreeProducts = threeProducts,
+      ThreeInventories = threeInventories,
+      TotalWarehouses = totalWarehouses,
+      TotalProducts = totalProducts,
+      TotalInventories = totalInventories
     };
     return View(homeModels);
   }

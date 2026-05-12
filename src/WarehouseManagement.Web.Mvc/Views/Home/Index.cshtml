@@ -9,30 +9,41 @@
     <div class="stats shadow bg-base-100">
       <div class="stat">
         <div class="stat-figure text-primary">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+               class="inline-block w-8 h-8 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
         </div>
         <div class="stat-title text-secondary">Total Warehouses</div>
-        <div class="stat-value text-primary">@Model.Warehouses.Count()</div>
+        <div class="stat-value text-primary">@Model.TotalWarehouses</div>
       </div>
     </div>
-    
+
     <div class="stats shadow bg-base-100">
       <div class="stat">
         <div class="stat-figure text-secondary">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+               class="inline-block w-8 h-8 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
         </div>
         <div class="stat-title text-secondary">Active Products</div>
-        <div class="stat-value text-secondary">@Model.Products.Count()</div>
+        <div class="stat-value text-secondary">@Model.TotalProducts</div>
       </div>
     </div>
-    
+
     <div class="stats shadow bg-base-100">
       <div class="stat">
         <div class="stat-figure text-accent">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+               class="inline-block w-8 h-8 stroke-current">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+          </svg>
         </div>
         <div class="stat-title text-secondary">Inventory Items</div>
-        <div class="stat-value text-accent">@Model.Inventories.Count()</div>
+        <div class="stat-value text-accent">@Model.TotalInventories</div>
       </div>
     </div>
   </div>
@@ -45,30 +56,32 @@
       <h2 class="text-3xl font-extrabold flex items-center gap-3">
         <span class="bg-primary p-2 rounded-lg text-white shadow-lg">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
           </svg>
         </span>
         Warehouses
       </h2>
-      <button class="btn btn-primary btn-sm">Manage All</button>
+      <a class="btn btn-primary btn-sm" asp-controller="Warehouse" asp-action="Index">Manage All</a>
     </div>
-    <partial name="_WarehouseList" model="Model.Warehouses" />
+    <partial name="_DashboardWarehouseList" model="Model.ThreeWarehouses" />
   </section>
 
   <!-- Products Section -->
   <section>
-     <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center justify-between mb-6">
       <h2 class="text-3xl font-extrabold flex items-center gap-3">
         <span class="bg-secondary p-2 rounded-lg text-white shadow-lg">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
         </span>
         Products
       </h2>
-      <button class="btn btn-secondary btn-sm">View Catalog</button>
+      <a class="btn btn-secondary btn-sm" asp-controller="Product" asp-action="Index">View Catalog</a>
     </div>
-    <partial name="_ProductList" model="Model.Products" />
+    <partial name="_DashboardProductList" model="Model.ThreeProducts" />
   </section>
 
   <!-- Inventory Section -->
@@ -77,16 +90,14 @@
       <h2 class="text-3xl font-extrabold flex items-center gap-3">
         <span class="bg-accent p-2 rounded-lg text-white shadow-lg">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </span>
         Live Inventory
       </h2>
-      <div class="join shadow-sm">
-        <input class="input input-bordered input-sm join-item" placeholder="Search SKU..." />
-        <button class="btn btn-sm join-item">Search</button>
-      </div>
+      <a class="btn btn-secondary btn-sm" asp-controller="Inventory" asp-action="Index">Stocks</a>
     </div>
-    <partial name="_InventoryList" model="Model.Inventories" />
+    <partial name="_DashboardInventoryList" model="Model.ThreeInventories" />
   </section>
 </div>

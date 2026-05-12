@@ -1,7 +1,8 @@
 
 using Microsoft.EntityFrameworkCore;
 using WarehouseManagement.Application.ViewModels;
-using WarehouseManagement.EntityFrameworkCore;
+using WarehouseManagement.Data;
+using WarehouseManagement.Models;
 
 namespace WarehouseManagement.Application.Services;
 
@@ -15,6 +16,21 @@ public class ProductService : IProductService
     _context = context;
   }
 
+  public async Task<List<ListProductViewModel>> Get3ProductsList()
+  {
+    return await _context.Products
+      .AsNoTracking()
+      .Take(3)
+      .Select(p => new ListProductViewModel
+      {
+        Id = p.Id,
+        Name = p.Name,
+        SKU = p.SKU,
+        SupplierId = p.SupplierId,
+        ReorderLevel = p.ReorderLevel
+      }).ToListAsync();
+  }
+
   public async Task<List<ListProductViewModel>> GetAllProductsList()
   {
     return await _context.Products
@@ -25,7 +41,12 @@ public class ProductService : IProductService
         Name = p.Name,
         SKU = p.SKU,
         SupplierId = p.SupplierId,
-        ReorderLevel = p.ReorderLevel
+        ReorderLevel = p.ReorderLevel,
+        SupplierName = p.Supplier.Name,
+        UnitCost = p.UnitCost ?? 0,
+        WeightLbs = p.WeightLbs ?? 0,
+        Category = p.Category ?? "",
+        Barcode = p.Barcode ?? ""
       }).ToListAsync();
   }
 
@@ -41,6 +62,12 @@ public class ProductService : IProductService
         SKU = p.SKU,
         SupplierId = p.SupplierId,
         ReorderLevel = p.ReorderLevel
-      }).FirstOrDefaultAsync();
+      })
+      .FirstOrDefaultAsync();
+  }
+
+  public async Task<int> GetTotalProductsCountAsync()
+  {
+    return await _context.Products.CountAsync();
   }
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using WarehouseManagement.Application.Services;
 using WarehouseManagement.Core;
 using WarehouseManagement.EntityFrameworkCore;
+using WarehouseManagement.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +25,7 @@ using (var scope = app.Services.CreateScope())
 {
   var services = scope.ServiceProvider;
   var context = services.GetRequiredService<WarehouseDbContext>();
-  DbInitializer.Initialize(context);
+  await DbInitializer.Initialize(context);
 }
 
 // Configure the HTTP request pipeline.

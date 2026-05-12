@@ -1,21 +1,55 @@
+@using WarehouseManagement.Models
 @model IEnumerable<WarehouseManagement.Application.ViewModels.ListWarehouseViewModel>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-  @foreach (var warehouse in Model)
-  {
-    <div class="card bg-base-100 shadow-xl border border-base-200 hover:border-primary transition-all group">
-      <div class="card-body p-5">
-        <div class="flex justify-between items-start">
-          <div class="badge badge-outline group-hover:badge-primary transition-colors">@warehouse.WarehouseCode</div>
-          <div class="text-xs text-secondary font-mono">ID: @warehouse.Id.ToString().Substring(0, 8)</div>
-        </div>
-        <h3 class="card-title mt-2 text-base group-hover:text-primary transition-colors">@warehouse.Name</h3>
-        <div class="card-actions justify-end mt-4">
-          <button class="btn btn-ghost btn-xs" onclick="openWarehouseModal('@warehouse.Id')">Details</button>
-        </div>
-      </div>
-    </div>
-  }
+<div class="overflow-x-auto bg-base-100 rounded-xl shadow-xl border border-base-200">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr class="bg-base-200 text-base-content/70">
+        <th>Warehouse</th>
+        <th>Warehouse Code</th>
+        <th>Capacity Square Feet</th>
+        <th>From Transfers</th>
+        <th>To Transfers</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var warehouse in Model)
+      {
+
+        <tr class="hover">
+          <td>
+            <div>
+              <div class="font-bold">@warehouse.Name</div>
+              <div class="text-[10px] opacity-50 font-mono">ID: @warehouse.Id.ToString().Substring(0, 8)</div>
+            </div>
+          </td>
+          <td>
+            <div class="badge badge-ghost">@warehouse.WarehouseCode</div>
+          </td>
+          <td>
+            <span class="font-mono text-xs font-thin ">@warehouse.CapacitySquareFeet</span>
+          </td>
+          <td>
+            <span class="text-sm opacity-70">@warehouse.TotalInventories</span>
+          </td>
+          <td>
+            <div class="badge @warehouse.FromTransfers.Count badge-sm font-semibold">
+              @(warehouse.ToTransfers.Count > 10 ? "Valet" : (warehouse.FromTransfers.Count > 50 ? "King" : "Queen"))
+            </div>
+            <progress
+            class="progress @(warehouse.FromTransfers.Count > 10 ? "progress-error" : "progress-success") w-20 block mt-1"
+            max="100" value="@warehouse.FromTransfers.Count"></progress>
+          </td>
+          <td>
+            <div class="flex gap-2">
+              <button class="btn btn-primary btn-xs" onclick="openWarehouseModal('@warehouse.Id')">Details</button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
 </div>
 
 <!-- Unique ID for Warehouse Modal -->

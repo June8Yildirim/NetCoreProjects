@@ -1,5 +1,5 @@
 using WarehouseManagement.Application.ViewModels;
-using WarehouseManagement.EntityFrameworkCore;
+using WarehouseManagement.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace WarehouseManagement.Application.Services;
@@ -13,6 +13,19 @@ public class WarehouseService : IWarehouseService
   {
     _context = context;
   }
+  public async Task<List<ListWarehouseViewModel>> Get3WarehousesAsync()
+  {
+    return await _context.Warehouses
+      .AsNoTracking()
+      .Take(3)
+      .Select(w => new ListWarehouseViewModel
+      {
+        Id = w.Id,
+        Name = w.Name,
+        WarehouseCode = w.WarehouseCode
+
+      }).ToListAsync();
+  }
   public async Task<List<ListWarehouseViewModel>> GetAllWarehousesAsync()
   {
     return await _context.Warehouses
@@ -21,7 +34,12 @@ public class WarehouseService : IWarehouseService
       {
         Id = w.Id,
         Name = w.Name,
-        WarehouseCode = w.WarehouseCode
+        WarehouseCode = w.WarehouseCode,
+        CapacitySquareFeet = w.CapacitySquareFeet ?? 0,
+        TotalInventories = w.Inventories.Count(),
+        TotalUsers = w.Users.Count(),
+        FromTransfers = w.FromTransfers,
+        ToTransfers = w.ToTransfers
 
       }).ToListAsync();
   }
@@ -35,8 +53,19 @@ public class WarehouseService : IWarehouseService
       {
         Id = w.Id,
         Name = w.Name,
-        WarehouseCode = w.WarehouseCode
+        WarehouseCode = w.WarehouseCode,
+        CapacitySquareFeet = w.CapacitySquareFeet ?? 0,
+        Timezone = w.Timezone,
+        Inventories = w.Inventories,
+        Users = w.Users,
+        FromTransfers = w.FromTransfers,
+        ToTransfers = w.ToTransfers
       })
     .FirstOrDefaultAsync();
+  }
+
+  public async Task<int> GetTotalWarehousesCountAsync()
+  {
+    return await _context.Warehouses.CountAsync();
   }
 }

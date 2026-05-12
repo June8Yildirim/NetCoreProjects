@@ -14,9 +14,14 @@ public class WarehouseController : Controller
     _warehouseService = service;
   }
 
-  public IActionResult Index()
+  public async Task<IActionResult> Index()
   {
-    return View();
+    var warehouses = await _warehouseService.GetAllWarehousesAsync();
+    if (warehouses == null)
+    {
+      return NotFound();
+    }
+    return View(warehouses);
   }
 
   public async Task<IActionResult> WarehouseDetails(Guid Id)

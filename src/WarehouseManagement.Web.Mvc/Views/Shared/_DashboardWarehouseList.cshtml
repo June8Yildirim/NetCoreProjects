@@ -1,0 +1,70 @@
+@model IEnumerable<WarehouseManagement.Application.ViewModels.ListWarehouseViewModel>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  @foreach (var warehouse in Model)
+  {
+    <div class="card bg-base-100 shadow-xl border border-base-200 hover:border-primary transition-all group">
+      <div class="card-body p-5">
+        <div class="flex justify-between items-start">
+          <div class="badge badge-outline group-hover:badge-primary transition-colors">@warehouse.WarehouseCode</div>
+        </div>
+        <h3 class="card-title mt-2 text-base group-hover:text-primary transition-colors">@warehouse.Name</h3>
+        <div class="card-actions justify-end mt-1">
+          <button class="btn btn-ghost btn-xs" onclick="openWarehouseModal('@warehouse.Id')">Details</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Unique ID for Warehouse Modal -->
+<dialog id="warehouse_modal" class="modal">
+  <div class="modal-box">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <div id="warehouse_modal_content">
+      <div class="flex flex-col items-center py-10">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+        <p class="mt-4 text-sm opacity-50">Loading warehouse details...</p>
+      </div>
+    </div>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<script>
+  function openWarehouseModal(id) {
+    const modal = document.getElementById('warehouse_modal');
+    const content = document.getElementById('warehouse_modal_content');
+
+    content.innerHTML = `
+      <div class="flex flex-col items-center py-10">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+        <p class="mt-4 text-sm opacity-50">Loading warehouse details...</p>
+      </div>
+    `;
+
+    modal.showModal();
+
+    // Correct route: /Warehouse/WarehouseDetails/
+    fetch(`/Warehouse/WarehouseDetails/${id}`)
+      .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.text();
+      })
+      .then(html => {
+        content.innerHTML = html;
+      })
+      .catch(error => {
+        content.innerHTML = `
+          <div class="alert alert-error">
+            <span>Error loading warehouse. Please try again.</span>
+          </div>
+        `;
+        console.error('Error:', error);
+      });
+  }
+</script>
