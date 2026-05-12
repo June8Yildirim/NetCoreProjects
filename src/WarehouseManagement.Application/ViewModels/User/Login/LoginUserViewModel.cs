@@ -5,15 +5,16 @@ namespace WarehouseManagement.Application.ViewModels.User.Login
   public class LoginUserViewModel
   {
     [Required]
-    [Display(Name = "Name")]
-    public string Name { get; set; } = string.Empty;
-
-    [Required]
+    [EmailAddress]
     [Display(Name = "Email")]
     public string Email { get; set; } = string.Empty;
 
     [Required]
-    [Display(Name = "WarehouseId")]
-    public Guid WarehouseId { get; set; }
+    [DataType(DataType.Password)]
+    [Display(Name = "Password")]
+    public string Password { get; set; } = string.Empty;
+
+    [Display(Name = "Remember me?")]
+    public bool RememberMe { get; set; }
   }
 }

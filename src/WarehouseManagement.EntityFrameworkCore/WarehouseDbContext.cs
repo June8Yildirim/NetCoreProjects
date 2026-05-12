@@ -30,12 +30,14 @@
 //     }
 //   }
 // }
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using WarehouseManagement.Models;
 
 namespace WarehouseManagement.Data
 {
-  public class WarehouseDbContext : DbContext
+  public class WarehouseDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
   {
     public WarehouseDbContext(DbContextOptions<WarehouseDbContext> options)
         : base(options)
@@ -47,7 +49,6 @@ namespace WarehouseManagement.Data
     public DbSet<Product> Products { get; set; }
     public DbSet<Inventory> Inventories { get; set; }
     public DbSet<StockTracking> StockTrackings { get; set; }
-    public DbSet<User> Users { get; set; }
     public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
     public DbSet<PurchaseOrderLine> PurchaseOrderLines { get; set; }
     public DbSet<Transfer> Transfers { get; set; }
@@ -55,6 +56,14 @@ namespace WarehouseManagement.Data
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       base.OnModelCreating(modelBuilder);
+
+      modelBuilder.Entity<User>().ToTable("Users");
+      modelBuilder.Entity<IdentityRole<Guid>>().ToTable("Roles");
+      modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("UserRoles");
+      modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("UserClaims");
+      modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("UserLogins");
+      modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("RoleClaims");
+      modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("UserTokens");
 
       // Inventory - Composite unique index
       modelBuilder.Entity<Inventory>()

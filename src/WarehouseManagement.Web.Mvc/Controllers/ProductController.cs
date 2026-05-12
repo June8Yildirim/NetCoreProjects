@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WarehouseManagement.Application.Services;
 using WarehouseManagement.Application.ViewModels.Product.Create;
@@ -6,6 +7,7 @@ using WarehouseManagement.Web.Mvc.Models;
 
 namespace WarehouseManagement.Web.Mvc.Controllers;
 
+[Authorize]
 public class ProductController : Controller
 {
   private readonly IProductService _productService;

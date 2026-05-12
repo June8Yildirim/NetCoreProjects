@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using WarehouseManagement.Application.Services;
@@ -7,6 +8,7 @@ using WarehouseManagement.Web.Mvc.Models;
 
 namespace WarehouseManagement.Web.Mvc.Controllers;
 
+[Authorize]
 public class WarehouseController : Controller
 {
   private readonly IWarehouseService _warehouseService;

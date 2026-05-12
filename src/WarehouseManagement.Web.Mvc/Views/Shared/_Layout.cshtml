@@ -25,24 +25,42 @@
       <div class="flex-none hidden lg:block">
         <ul class="menu menu-horizontal px-1 gap-2">
           <li><a asp-controller="Home" asp-action="Index">Dashboard</a></li>
-          <li><a asp-controller="Inventory" asp-action="Index">Inventory</a></li>
-          <li><a asp-controller="Warehouse" asp-action="Index">Warehouses</a></li>
-          <li><a asp-controller="Product" asp-action="Index">Product</a></li>
+          @if (User.Identity?.IsAuthenticated == true)
+          {
+            <li><a asp-controller="Inventory" asp-action="Index">Inventory</a></li>
+            <li><a asp-controller="Warehouse" asp-action="Index">Warehouses</a></li>
+            <li><a asp-controller="Product" asp-action="Index">Product</a></li>
+          }
         </ul>
       </div>
       <div class="flex-none">
-        <div class="dropdown dropdown-end">
-          <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-            <div class="w-10 rounded-full">
-              <img alt="User profile" src="https://ui-avatars.com/api/?name=Admin+User&background=random" />
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+              <div class="w-10 rounded-full">
+                <img alt="User profile" src="https://ui-avatars.com/api/?name=@(User.Identity.Name)&background=random" />
+              </div>
             </div>
+            <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+              <li><p class="font-bold px-4 py-2 border-b border-base-200">@User.Identity.Name</p></li>
+              <li><a>Profile</a></li>
+              <li><a>Settings</a></li>
+              <li>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="inline-flex w-full">
+                  <button type="submit" class="w-full text-left px-4 py-2 hover:bg-base-200 rounded-lg transition-colors">Logout</button>
+                </form>
+              </li>
+            </ul>
           </div>
-          <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-            <li><a>Profile</a></li>
-            <li><a>Settings</a></li>
-            <li><a>Logout</a></li>
-          </ul>
-        </div>
+        }
+        else
+        {
+          <div class="flex gap-2">
+            <a asp-controller="Account" asp-action="Login" class="btn btn-ghost">Log in</a>
+            <a asp-controller="Account" asp-action="Signup" class="btn btn-primary">Sign up</a>
+          </div>
+        }
       </div>
     </div>
   </header>
