@@ -1,46 +1,61 @@
 @model WarehouseManagement.Application.ViewModels.CreateInventoryViewModel
 
-<form asp-action="Create" method="post" id="createInventoryForm" class="space-y-4">
-    <div asp-validation-summary="ModelOnly" class="alert alert-error mb-4"></div>
+<form asp-action="@(Model.Id.HasValue ? "Edit" : "Create")" method="post" id="createInventoryForm" class="space-y-4">
+  <div asp-validation-summary="ModelOnly" class="alert alert-error mb-4"></div>
 
-    <div class="form-control w-full">
-        <label asp-for="ProductId" class="label">
-            <span class="label-text font-bold">Product</span>
-        </label>
-        <select asp-for="ProductId" asp-items="Model.Products" class="select select-bordered w-full">
-            <option disabled selected>-- Select Product --</option>
-        </select>
-        <span asp-validation-for="ProductId" class="text-error text-sm mt-1"></span>
-    </div>
+  @if (Model.Id.HasValue)
+  {
+    <input type="hidden" asp-for="Id" />
+  }
 
-    <div class="form-control w-full">
-        <label asp-for="WarehouseId" class="label">
-            <span class="label-text font-bold">Warehouse</span>
-        </label>
-        <select asp-for="WarehouseId" asp-items="Model.Warehouses" class="select select-bordered w-full">
-            <option disabled selected>-- Select Warehouse --</option>
-        </select>
-        <span asp-validation-for="WarehouseId" class="text-error text-sm mt-1"></span>
+  <div class="form-control w-full">
+    <div class="flex justify-between items-end">
+      <label asp-for="ProductId" class="label pb-1">
+        <span class="label-text font-bold">Product</span>
+      </label>
+      @if (!Model.Id.HasValue)
+      {
+        <button type="button" onclick="switchToProductForm()" class="btn btn-link btn-xs text-primary no-underline lowercase p-0 h-auto min-h-0">
+          + add new product
+        </button>
+      }
     </div>
+    <select asp-for="ProductId" asp-items="Model.Products" class="select select-bordered w-full">
+      <option disabled selected>-- Select Product --</option>
+    </select>
+    <span asp-validation-for="ProductId" class="text-error text-sm mt-1"></span>
+  </div>
 
-    <div class="form-control w-full">
-        <label asp-for="QuantityOnHand" class="label">
-            <span class="label-text font-bold">Quantity On Hand</span>
-        </label>
-        <input asp-for="QuantityOnHand" type="number" class="input input-bordered w-full" placeholder="e.g. 100" />
-        <span asp-validation-for="QuantityOnHand" class="text-error text-sm mt-1"></span>
-    </div>
+  <div class="form-control w-full">
+    <label asp-for="WarehouseId" class="label">
+      <span class="label-text font-bold">Warehouse</span>
+    </label>
+    <select asp-for="WarehouseId" asp-items="Model.Warehouses" class="select select-bordered w-full">
+      <option disabled selected>-- Select Warehouse --</option>
+    </select>
+    <span asp-validation-for="WarehouseId" class="text-error text-sm mt-1"></span>
+  </div>
 
-    <div class="form-control w-full">
-        <label asp-for="MinSafetyStock" class="label">
-            <span class="label-text font-bold">Minimum Safety Stock</span>
-        </label>
-        <input asp-for="MinSafetyStock" type="number" class="input input-bordered w-full" placeholder="e.g. 10" />
-        <span asp-validation-for="MinSafetyStock" class="text-error text-sm mt-1"></span>
-    </div>
+  <div class="form-control w-full">
+    <label asp-for="QuantityOnHand" class="label">
+      <span class="label-text font-bold">Quantity On Hand</span>
+    </label>
+    <input asp-for="QuantityOnHand" type="number" class="input input-bordered w-full" placeholder="e.g. 100" />
+    <span asp-validation-for="QuantityOnHand" class="text-error text-sm mt-1"></span>
+  </div>
 
-    <div class="modal-action">
-        <button type="button" onclick="create_inventory_modal.close()" class="btn btn-ghost">Cancel</button>
-        <button type="submit" class="btn btn-primary px-8">Save Inventory</button>
-    </div>
+  <div class="form-control w-full">
+    <label asp-for="MinSafetyStock" class="label">
+      <span class="label-text font-bold">Minimum Safety Stock</span>
+    </label>
+    <input asp-for="MinSafetyStock" type="number" class="input input-bordered w-full" placeholder="e.g. 10" />
+    <span asp-validation-for="MinSafetyStock" class="text-error text-sm mt-1"></span>
+  </div>
+
+  <div class="modal-action">
+    <button type="button" onclick="handleInventoryCancel()" class="btn btn-ghost">Cancel</button>
+    <button type="submit" class="btn btn-primary px-8">
+      @(Model.Id.HasValue ? "Update Inventory" : "Save Inventory")
+    </button>
+  </div>
 </form>

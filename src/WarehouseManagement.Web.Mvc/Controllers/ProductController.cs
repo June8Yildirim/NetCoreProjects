@@ -79,6 +79,41 @@ public class ProductController : Controller
     return View(viewModel);
   }
 
+  [HttpGet]
+  public async Task<IActionResult> Edit(Guid id)
+  {
+    var viewModel = await _productService.GetProductForEditAsync(id);
+    if (viewModel == null) return NotFound();
+
+    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+    {
+      return PartialView("_CreateProductPartial", viewModel);
+    }
+    return View(viewModel);
+  }
+
+  [HttpPost]
+  [ValidateAntiForgeryToken]
+  public async Task<IActionResult> Edit(CreateProductViewModel model)
+  {
+    if (ModelState.IsValid)
+    {
+      await _productService.UpdateProductAsync(model);
+      if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+      {
+        return Json(new { success = true });
+      }
+      return RedirectToAction(nameof(Index));
+    }
+
+    model.Suppliers = (await _productService.CreateProductViewModelAsync()).Suppliers;
+    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+    {
+      return PartialView("_CreateProductPartial", model);
+    }
+    return View(model);
+  }
+
   [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
   public IActionResult Error()
   {

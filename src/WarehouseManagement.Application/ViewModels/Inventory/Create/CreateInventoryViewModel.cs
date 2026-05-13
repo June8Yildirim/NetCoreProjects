@@ -11,6 +11,11 @@ namespace WarehouseManagement.Application.ViewModels
   public class CreateInventoryViewModel
   {
     /// <summary>
+    /// The unique ID of the inventory record. Only populated during Edit operations.
+    /// </summary>
+    public Guid? Id { get; set; }
+
+    /// <summary>
     /// The ID of the product the user selected from the dropdown.
     /// [Required] ensures the form cannot be submitted without a selection.
     /// </summary>

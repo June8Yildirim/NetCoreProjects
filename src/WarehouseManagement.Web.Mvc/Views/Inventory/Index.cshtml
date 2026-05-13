@@ -7,7 +7,8 @@
   <div class="flex justify-between items-center mb-6">
     <h1 class="font-extrabold text-3xl">Inventory</h1>
     <button onclick="openCreateModal()" class="btn btn-primary">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+           stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
       </svg>
       Add Inventory
@@ -19,12 +20,12 @@
 <!-- Modal Structure -->
 <dialog id="create_inventory_modal" class="modal">
   <div class="modal-box max-w-2xl">
-    <h3 class="font-bold text-lg mb-4">Add New Inventory Item</h3>
+    <h3 id="modal-title" class="font-bold text-lg mb-4">Add New Inventory Item</h3>
     <div id="modal-content">
-        <!-- Content will be loaded here -->
-        <div class="flex justify-center py-8">
-            <span class="loading loading-spinner loading-lg text-primary"></span>
-        </div>
+      <!-- Content will be loaded here -->
+      <div class="flex justify-center py-8">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+      </div>
     </div>
   </div>
   <form method="dialog" class="modal-backdrop">
@@ -33,58 +34,167 @@
 </dialog>
 
 @section Scripts {
-    <script>
-        function openCreateModal() {
-            const modal = document.getElementById('create_inventory_modal');
-            const content = document.getElementById('modal-content');
+  <script>
+    function openCreateModal() {
+      const modal = document.getElementById('create_inventory_modal');
+      const content = document.getElementById('modal-content');
+      const title = document.getElementById('modal-title');
 
-            modal.showModal();
+      // Reset content to spinner and set title
+      content.innerHTML = '<div class="flex justify-center py-8"><span class="loading loading-spinner loading-lg text-primary"></span></div>';
+      title.innerText = "Add New Inventory Item";
+      
+      modal.showModal();
 
-            fetch('@Url.Action("Create")', {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.text())
-            .then(html => {
-                content.innerHTML = html;
-                setupFormSubmission();
-            });
+      fetch('@Url.Action("Create")', {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
         }
+      })
+        .then(response => {
+          if (!response.ok) {
+            if (response.status === 403) {
+              throw new Error("You do not have permission to add inventory.");
+            }
+            throw new Error("Failed to load the form.");
+          }
+          return response.text();
+        })
+        .then(html => {
+          content.innerHTML = html;
+          setupFormSubmission();
+        })
+        .catch(error => {
+          content.innerHTML = `<div class="alert alert-error"><span>${error.message}</span></div>`;
+        });
+    }
 
-        function setupFormSubmission() {
-            const form = document.getElementById('createInventoryForm');
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
+    function switchToProductForm() {
+      const content = document.getElementById('modal-content');
+      const title = document.getElementById('modal-title');
 
-                const formData = new FormData(form);
+      content.innerHTML = '<div class="flex justify-center py-8"><span class="loading loading-spinner loading-lg text-primary"></span></div>';
+      title.innerText = "Quick Add New Product";
 
-                fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json().catch(() => response.text());
-                    }
-                    throw new Error('Network response was not ok.');
-                })
-                .then(data => {
-                    if (data.success) {
-                        location.reload(); // Success! Refresh page to show new item
-                    } else {
-                        // If it's not JSON success, it's likely the PartialView with validation errors
-                        document.getElementById('modal-content').innerHTML = data;
-                        setupFormSubmission(); // Re-bind event listener
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            });
+      fetch('/Product/Create', {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
         }
-    </script>
+      })
+        .then(r => r.text())
+        .then(html => {
+          content.innerHTML = html;
+          setupProductFormSubmission();
+        })
+        .catch(error => {
+          content.innerHTML = '<div class="alert alert-error"><span>Failed to load the product form.</span></div>';
+        });
+    }
+
+    function handleProductCancel() {
+      // If we are in the "Quick Add" flow, go back to the inventory form
+      openCreateModal();
+    }
+
+    function switchToEditInventoryForm(id) {
+      const modal = document.getElementById('create_inventory_modal');
+      const content = document.getElementById('modal-content');
+      const title = document.getElementById('modal-title');
+
+      title.innerText = "Edit Inventory Item";
+      content.innerHTML = '<div class="flex justify-center py-8"><span class="loading loading-spinner loading-lg text-primary"></span></div>';
+
+      if (!modal.open) {
+        modal.showModal();
+      }
+
+      fetch(`/Inventory/Edit/${id}`, {
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+        .then(r => r.text())
+        .then(html => {
+          content.innerHTML = html;
+          setupFormSubmission();
+        });
+    }
+
+    function handleInventoryCancel() {
+      document.getElementById('create_inventory_modal').close();
+    }
+
+    function setupProductFormSubmission() {
+      const form = document.getElementById('createProductForm');
+      if (!form) return;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+          .then(response => {
+            if (response.ok) {
+              return response.json().catch(() => response.text());
+            }
+            throw new Error('Network response was not ok.');
+          })
+          .then(data => {
+            if (data.success) {
+              // Product created! Now go back to the inventory form
+              openCreateModal();
+            } else {
+              // Validation failed, show errors
+              document.getElementById('modal-content').innerHTML = data;
+              setupProductFormSubmission();
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      });
+    }
+
+    function setupFormSubmission() {
+      const form = document.getElementById('createInventoryForm');
+      if (!form) return;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+          .then(response => {
+            if (response.ok) {
+              return response.json().catch(() => response.text());
+            }
+            throw new Error('Network response was not ok.');
+          })
+          .then(data => {
+            if (data.success) {
+              location.reload(); 
+            } else {
+              document.getElementById('modal-content').innerHTML = data;
+              setupFormSubmission();
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+      });
+    }
+  </script>
 }

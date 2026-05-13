@@ -27,33 +27,47 @@ public class InventoryService : IInventoryService
   /// Fetches 3 records. We use .AsNoTracking() here because we are only 
   /// reading data for display, which makes the query faster and saves memory.
   /// </summary>
-  public async Task<List<ListInventoryViewModel>> GetList3InventoryAsync()
+  public async Task<List<ListInventoryViewModel>> GetList3InventoryAsync(Guid? warehouseId = null)
   {
-    return await _context.Inventories
-      .Include(i => i.Product)   // Tell EF to load the Product info too
-      .Include(i => i.Warehouse) // Tell EF to load the Warehouse info too
-      .AsNoTracking()
-      .Take(3)
-      .Select(i => new ListInventoryViewModel
-      {
-        Id = i.Id,
-        ProductName = i.Product.Name,
-        WarehouseName = i.Warehouse.Name,
-        ProductId = i.ProductId,
-        WarehouseId = i.WarehouseId,
-        QuantityOnHand = i.QuantityOnHand,
-        QuantityAllocated = i.QuantityAllocated
-      })
-    .ToListAsync();
+    var query = _context.Inventories.AsQueryable();
+
+    if (warehouseId.HasValue)
+    {
+      query = query.Where(i => i.WarehouseId == warehouseId.Value);
+    }
+    return await query
+    .Include(i => i.Product)   // Tell EF to load the Product info too
+    .Include(i => i.Warehouse) // Tell EF to load the Warehouse info too
+    .AsNoTracking()
+    .Take(3)
+    .Select(i => new ListInventoryViewModel
+    {
+      Id = i.Id,
+      ProductName = i.Product.Name,
+      WarehouseName = i.Warehouse.Name,
+      ProductId = i.ProductId,
+      WarehouseId = i.WarehouseId,
+      QuantityOnHand = i.QuantityOnHand,
+      QuantityAllocated = i.QuantityAllocated,
+      AvailableQuantity = i.AvailableQuantity,
+      NeedsReorder = i.NeedsReorder
+    })
+  .ToListAsync();
   }
 
   /// <summary>
   /// Fetches all records. We "Select" them into a ViewModel to ensure the 
   /// View only receives the exact data it needs to show the table.
   /// </summary>
-  public async Task<List<ListInventoryViewModel>> GetListInventoryAsync()
+  public async Task<List<ListInventoryViewModel>> GetListInventoryAsync(Guid? warehouseId = null)
   {
-    return await _context.Inventories
+    var query = _context.Inventories.AsQueryable();
+
+    if (warehouseId.HasValue)
+    {
+      query = query.Where(i => i.WarehouseId == warehouseId.Value);
+    }
+    return await query
       .Include(i => i.Product)
       .Include(i => i.Warehouse)
       .AsNoTracking()
@@ -65,16 +79,24 @@ public class InventoryService : IInventoryService
         ProductId = i.ProductId,
         WarehouseId = i.WarehouseId,
         QuantityOnHand = i.QuantityOnHand,
-        QuantityAllocated = i.QuantityAllocated
+        QuantityAllocated = i.QuantityAllocated,
+        AvailableQuantity = i.AvailableQuantity,
+        NeedsReorder = i.NeedsReorder
       }).ToListAsync();
   }
 
   /// <summary>
   /// Finds one record. This is a "surgical" query to get a single row.
   /// </summary>
-  public async Task<InventoryViewModel?> GetInventoryByIdAsync(Guid id)
+  public async Task<InventoryViewModel?> GetInventoryByIdAsync(Guid id, Guid? warehouseId = null)
   {
-    return await _context.Inventories
+    var query = _context.Inventories.AsQueryable();
+
+    if (warehouseId.HasValue)
+    {
+      query = query.Where(i => i.WarehouseId == warehouseId.Value);
+    }
+    return await query
       .AsNoTracking()
       .Where(i => i.Id == id)
       .Select(i => new InventoryViewModel
@@ -85,7 +107,10 @@ public class InventoryService : IInventoryService
         ProductId = i.ProductId,
         WarehouseId = i.WarehouseId,
         QuantityOnHand = i.QuantityOnHand,
-        QuantityAllocated = i.QuantityAllocated
+        QuantityAllocated = i.QuantityAllocated,
+        MinSafetyStock = i.MinSafetyStock,
+        AvailableQuantity = i.AvailableQuantity,
+        NeedsReorder = i.NeedsReorder
       }).FirstOrDefaultAsync();
   }
 
@@ -150,6 +175,38 @@ public class InventoryService : IInventoryService
     };
 
     _context.Inventories.Add(inventory);
+    await _context.SaveChangesAsync();
+  }
+
+  public async Task<CreateInventoryViewModel?> GetInventoryForEditAsync(Guid id)
+  {
+    var inventory = await _context.Inventories
+        .AsNoTracking()
+        .FirstOrDefaultAsync(i => i.Id == id);
+
+    if (inventory == null) return null;
+
+    var viewModel = await CreateInventoryViewModelAsync();
+    viewModel.Id = inventory.Id;
+    viewModel.ProductId = inventory.ProductId;
+    viewModel.WarehouseId = inventory.WarehouseId;
+    viewModel.QuantityOnHand = inventory.QuantityOnHand;
+    viewModel.MinSafetyStock = inventory.MinSafetyStock;
+
+    return viewModel;
+  }
+
+  public async Task UpdateInventoryAsync(CreateInventoryViewModel model)
+  {
+    var inventory = await _context.Inventories.FindAsync(model.Id);
+    if (inventory == null) throw new Exception("Inventory record not found");
+
+    inventory.ProductId = model.ProductId;
+    inventory.WarehouseId = model.WarehouseId;
+    inventory.QuantityOnHand = model.QuantityOnHand;
+    inventory.MinSafetyStock = model.MinSafetyStock;
+
+    _context.Inventories.Update(inventory);
     await _context.SaveChangesAsync();
   }
 }

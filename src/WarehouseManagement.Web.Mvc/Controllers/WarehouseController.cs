@@ -30,7 +30,7 @@ public class WarehouseController : Controller
 
   public async Task<IActionResult> WarehouseDetails(Guid Id)
   {
-    var warehouse = await _warehouseService.GetWarehouseByIdViewModelAsync(Id);
+    var warehouse = await _warehouseService.GetWarehouseDetailsViewModelAsync(Id);
     if (warehouse == null)
     {
       return NotFound();
@@ -76,6 +76,41 @@ public class WarehouseController : Controller
     }
     return View(warehouseModel);
   }
+
+  [HttpGet]
+  public async Task<IActionResult> Edit(Guid id)
+  {
+    var viewModel = await _warehouseService.GetWarehouseForEditAsync(id);
+    if (viewModel == null) return NotFound();
+
+    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+    {
+      return PartialView("_CreateWarehousePartial", viewModel);
+    }
+    return View(viewModel);
+  }
+
+  [HttpPost]
+  [ValidateAntiForgeryToken]
+  public async Task<IActionResult> Edit(CreateWarehouseViewModel model)
+  {
+    if (ModelState.IsValid)
+    {
+      await _warehouseService.UpdateWarehouseAsync(model);
+      if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+      {
+        return Json(new { success = true });
+      }
+      return RedirectToAction(nameof(Index));
+    }
+
+    if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+    {
+      return PartialView("_CreateWarehousePartial", model);
+    }
+    return View(model);
+  }
+
   [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
   public IActionResult Error()
   {

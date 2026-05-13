@@ -1,8 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using WarehouseManagement.Application.Services;
 using WarehouseManagement.Application.ViewModels.CompositeViewModels;
+using WarehouseManagement.Models;
 using WarehouseManagement.Web.Mvc.Models;
 
 namespace WarehouseManagement.Web.Mvc.Controllers;
@@ -13,17 +15,28 @@ public class HomeController : Controller
   private readonly IWarehouseService _warehouseService;
   private readonly IProductService _productService;
   private readonly IInventoryService _inventoryService;
-  public HomeController(IWarehouseService warehouseService, IProductService productService, IInventoryService inventoryService)
+  private readonly UserManager<User> _userManager;
+
+  public HomeController(
+      IWarehouseService warehouseService, 
+      IProductService productService, 
+      IInventoryService inventoryService,
+      UserManager<User> userManager)
   {
     _warehouseService = warehouseService;
     _productService = productService;
     _inventoryService = inventoryService;
+    _userManager = userManager;
   }
+
   public async Task<IActionResult> Index()
   {
+    var user = await _userManager.GetUserAsync(User);
+    Guid? warehouseId = user?.Position == "Employee" ? user.WarehouseId : null;
+
     var threeWarehouses = await _warehouseService.Get3WarehousesAsync();
     var threeProducts = await _productService.Get3ProductsList();
-    var threeInventories = await _inventoryService.GetList3InventoryAsync();
+    var threeInventories = await _inventoryService.GetList3InventoryAsync(warehouseId);
 
     var totalWarehouses = await _warehouseService.GetTotalWarehousesCountAsync();
     var totalProducts = await _productService.GetTotalProductsCountAsync();

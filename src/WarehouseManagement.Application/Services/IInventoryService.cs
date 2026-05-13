@@ -17,23 +17,26 @@ public interface IInventoryService
   /// It maps the database entities into a simplified 'ListInventoryViewModel' 
   /// that is easier for the user interface to display.
   /// </summary>
+  /// <param name="warehouseId">Optional: Filter records by a specific warehouse.</param>
   /// <returns>A list of inventory items formatted for a table or list view.</returns>
-  Task<List<ListInventoryViewModel>> GetListInventoryAsync();
+  Task<List<ListInventoryViewModel>> GetListInventoryAsync(Guid? warehouseId = null);
 
   /// <summary>
   /// Retrieves exactly 3 inventory records, typically used for the Dashboard.
   /// This is optimized to only fetch a small subset of data.
   /// </summary>
+  /// <param name="warehouseId">Optional: Filter records by a specific warehouse.</param>
   /// <returns>A small list of 3 inventory items.</returns>
-  Task<List<ListInventoryViewModel>> GetList3InventoryAsync();
+  Task<List<ListInventoryViewModel>> GetList3InventoryAsync(Guid? warehouseId = null);
 
   /// <summary>
   /// Finds a specific inventory record by its unique ID.
   /// This is used when a user wants to see the full details of a single item.
   /// </summary>
   /// <param name="id">The unique GUID of the inventory record.</param>
+  /// <param name="warehouseId">Optional: Ensure the record belongs to the specified warehouse.</param>
   /// <returns>A detailed view model if found, otherwise null.</returns>
-  Task<InventoryViewModel?> GetInventoryByIdAsync(Guid id);
+  Task<InventoryViewModel?> GetInventoryByIdAsync(Guid id, Guid? warehouseId = null);
 
   /// <summary>
   /// Prepares a fresh 'CreateInventoryViewModel' to be used in a form.
@@ -57,4 +60,17 @@ public interface IInventoryService
   /// </summary>
   /// <returns>The total count of inventory rows.</returns>
   Task<int> GetTotalInventoriesCountAsync();
+
+  /// <summary>
+  /// Prepares a ViewModel populated with existing inventory data for editing.
+  /// </summary>
+  /// <param name="id">The ID of the inventory record to edit.</param>
+  /// <returns>A populated ViewModel ready for the edit form.</returns>
+  Task<CreateInventoryViewModel?> GetInventoryForEditAsync(Guid id);
+
+  /// <summary>
+  /// Updates an existing inventory record in the database.
+  /// </summary>
+  /// <param name="model">The updated data from the user's form.</param>
+  Task UpdateInventoryAsync(CreateInventoryViewModel model);
 }

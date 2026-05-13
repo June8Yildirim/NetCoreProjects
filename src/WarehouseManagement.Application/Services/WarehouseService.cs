@@ -46,12 +46,12 @@ public class WarehouseService : IWarehouseService
       }).ToListAsync();
   }
 
-  public async Task<WarehouseByIdViewModel?> GetWarehouseByIdViewModelAsync(Guid Id)
+  public async Task<WarehouseDetailsViewModel?> GetWarehouseDetailsViewModelAsync(Guid Id)
   {
     return await _context.Warehouses
       .AsNoTracking()
       .Where(w => w.Id == Id)
-      .Select(w => new WarehouseByIdViewModel
+      .Select(w => new WarehouseDetailsViewModel
       {
         Id = w.Id,
         Name = w.Name,
@@ -96,6 +96,40 @@ public class WarehouseService : IWarehouseService
       CurrentUtilizationPercent = model.CurrentUtilizationPercent
     };
     _context.Warehouses.Add(warehouse);
+    await _context.SaveChangesAsync();
+  }
+
+  public async Task<CreateWarehouseViewModel?> GetWarehouseForEditAsync(Guid id)
+  {
+    var warehouse = await _context.Warehouses
+        .AsNoTracking()
+        .FirstOrDefaultAsync(w => w.Id == id);
+
+    if (warehouse == null) return null;
+
+    return new CreateWarehouseViewModel
+    {
+      Id = warehouse.Id,
+      Name = warehouse.Name,
+      WarehouseCode = warehouse.WarehouseCode ?? "",
+      CapacitySquareFeet = warehouse.CapacitySquareFeet ?? 0,
+      CurrentUtilizationPercent = warehouse.CurrentUtilizationPercent,
+      Timezone = warehouse.Timezone ?? ""
+    };
+  }
+
+  public async Task UpdateWarehouseAsync(CreateWarehouseViewModel model)
+  {
+    var warehouse = await _context.Warehouses.FindAsync(model.Id);
+    if (warehouse == null) throw new Exception("Warehouse not found");
+
+    warehouse.Name = model.Name;
+    warehouse.WarehouseCode = model.WarehouseCode;
+    warehouse.CapacitySquareFeet = model.CapacitySquareFeet;
+    warehouse.CurrentUtilizationPercent = model.CurrentUtilizationPercent;
+    warehouse.Timezone = model.Timezone;
+
+    _context.Warehouses.Update(warehouse);
     await _context.SaveChangesAsync();
   }
 }

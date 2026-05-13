@@ -28,10 +28,11 @@
 
 <!-- Unique ID for Product Modal -->
 <dialog id="product_modal" class="modal">
-  <div class="modal-box">
+  <div class="modal-box max-w-3xl">
     <form method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
     </form>
+    <h3 id="product_modal_title" class="font-bold text-lg mb-4">fasdfa Product Details</h3>
     <div id="product_modal_content">
       <div class="flex flex-col items-center py-10">
         <span class="loading loading-spinner loading-lg text-secondary"></span>
@@ -48,7 +49,9 @@
   function openProductModal(id) {
     const modal = document.getElementById('product_modal');
     const content = document.getElementById('product_modal_content');
+    const title = document.getElementById('product_modal_title');
 
+    title.innerText = "Product Details";
     content.innerHTML = `
       <div class="flex flex-col items-center py-10">
         <span class="loading loading-spinner loading-lg text-secondary"></span>
@@ -58,7 +61,6 @@
 
     modal.showModal();
 
-    // Correct route: /Product/ProductDetails/
     fetch(`/Product/ProductDetails/${id}`)
       .then(response => {
         if (!response.ok) throw new Error('Network response was not ok');
@@ -75,5 +77,60 @@
         `;
         console.error('Error:', error);
       });
+  }
+
+  function switchToEditProductForm(id) {
+    const modal = document.getElementById('product_modal');
+    const content = document.getElementById('product_modal_content');
+    const title = document.getElementById('product_modal_title');
+
+    title.innerText = "Edit Product";
+    content.innerHTML = '<div class="flex justify-center py-8"><span class="loading loading-spinner loading-lg text-primary"></span></div>';
+
+    if (!modal.open) {
+      modal.showModal();
+    }
+
+    fetch(`/Product/Edit/${id}`, {
+      headers: {'X-Requested-With': 'XMLHttpRequest'}
+    })
+      .then(r => r.text())
+      .then(html => {
+        content.innerHTML = html;
+        setupFormSubmission();
+      });
+  }
+
+  function handleProductCancel() {
+    document.getElementById('product_modal').close();
+  }
+
+  function setupFormSubmission() {
+    const form = document.getElementById('createProductForm');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {'X-Requested-With': 'XMLHttpRequest'}
+      })
+        .then(response => {
+          if (response.ok) return response.json().catch(() => response.text());
+          throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+          if (data.success) {
+            location.reload();
+          } else {
+            document.getElementById('product_modal_content').innerHTML = data;
+            setupFormSubmission();
+          }
+        })
+        .catch(error => console.error('Error:', error));
+    });
   }
 </script>

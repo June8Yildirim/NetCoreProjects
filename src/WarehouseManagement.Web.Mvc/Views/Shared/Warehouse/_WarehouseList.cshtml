@@ -44,62 +44,11 @@
           <td>
             <div class="flex gap-2">
               <button class="btn btn-primary btn-xs" onclick="openWarehouseModal('@warehouse.Id')">Details</button>
+              <button class="btn btn-outline btn-xs" onclick="switchToEditWarehouseForm('@warehouse.Id')">Edit</button>
             </div>
           </td>
-        </tr>
-      }
-    </tbody>
-  </table>
-</div>
-
-<!-- Unique ID for Warehouse Modal -->
-<dialog id="warehouse_modal" class="modal">
-  <div class="modal-box">
-    <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-    </form>
-    <div id="warehouse_modal_content">
-      <div class="flex flex-col items-center py-10">
-        <span class="loading loading-spinner loading-lg text-primary"></span>
-        <p class="mt-4 text-sm opacity-50">Loading warehouse details...</p>
-      </div>
-    </div>
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
-
-<script>
-  function openWarehouseModal(id) {
-    const modal = document.getElementById('warehouse_modal');
-    const content = document.getElementById('warehouse_modal_content');
-
-    content.innerHTML = `
-      <div class="flex flex-col items-center py-10">
-        <span class="loading loading-spinner loading-lg text-primary"></span>
-        <p class="mt-4 text-sm opacity-50">Loading warehouse details...</p>
-      </div>
-    `;
-
-    modal.showModal();
-
-    // Correct route: /Warehouse/WarehouseDetails/
-    fetch(`/Warehouse/WarehouseDetails/${id}`)
-      .then(response => {
-        if (!response.ok) throw new Error('Network response was not ok');
-        return response.text();
-      })
-      .then(html => {
-        content.innerHTML = html;
-      })
-      .catch(error => {
-        content.innerHTML = `
-          <div class="alert alert-error">
-            <span>Error loading warehouse. Please try again.</span>
+          </tr>
+          }
+          </tbody>
+          </table>
           </div>
-        `;
-        console.error('Error:', error);
-      });
-  }
-</script>

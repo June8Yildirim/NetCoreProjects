@@ -27,7 +27,7 @@ public interface IProductService
   /// </summary>
   /// <param name="id">The unique ID of the product.</param>
   /// <returns>The product details or null if not found.</returns>
-  Task<ProductByIdViewModel?> GetProductByIdAsync(Guid id);
+  Task<ProductDetailsViewModel?> GetProductByIdAsync(Guid id);
 
   /// <summary>
   /// Prepares the "Empty Form" for creating a new product.
@@ -41,6 +41,19 @@ public interface IProductService
   /// </summary>
   /// <param name="model">The validated form data from the user.</param>
   Task CreateProductAsync(CreateProductViewModel model);
+
+  /// <summary>
+  /// Prepares a ViewModel populated with existing product data for editing.
+  /// </summary>
+  /// <param name="id">The ID of the product to edit.</param>
+  /// <returns>A populated CreateProductViewModel or null.</returns>
+  Task<CreateProductViewModel?> GetProductForEditAsync(Guid id);
+
+  /// <summary>
+  /// Updates an existing product in the database.
+  /// </summary>
+  /// <param name="model">The updated product data.</param>
+  Task UpdateProductAsync(CreateProductViewModel model);
 
   /// <summary>
   /// Counts how many products are currently in our catalog.

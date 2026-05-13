@@ -15,8 +15,6 @@
     <tbody>
       @foreach (var inventory in Model)
       {
-        var statusClass = inventory.QuantityOnHand < 10 ? "badge-error" : (inventory.QuantityOnHand < 50 ? "badge-warning" : "badge-success");
-
         <tr class="hover">
           <td>
             <div>
@@ -28,22 +26,26 @@
             <div class="badge badge-ghost">@inventory.WarehouseName</div>
           </td>
           <td>
-            <span class="font-mono text-lg font-bold">@inventory.QuantityOnHand</span>
+            <div class="flex flex-col">
+              <span class="font-mono text-lg font-bold">@inventory.QuantityOnHand</span>
+              <span class="text-[10px] opacity-50">Available: @inventory.AvailableQuantity</span>
+            </div>
           </td>
           <td>
             <span class="text-sm opacity-70">@inventory.QuantityAllocated</span>
           </td>
           <td>
-            <div class="badge @statusClass badge-sm font-semibold">
-              @(inventory.QuantityOnHand < 10 ? "Critical" : (inventory.QuantityOnHand < 50 ? "Low Stock" : "Healthy"))
+            <div class="badge @(inventory.NeedsReorder ? "badge-error" : "badge-success") badge-sm font-semibold">
+              @(inventory.NeedsReorder ? "Needs Reorder" : "Healthy")
             </div>
             <progress
-            class="progress @(inventory.QuantityOnHand < 10 ? "progress-error" : "progress-success") w-20 block mt-1"
-            value="@inventory.QuantityOnHand" max="100"></progress>
+            class="progress @(inventory.NeedsReorder ? "progress-error" : "progress-success") w-20 block mt-1"
+            value="@inventory.AvailableQuantity" max="100"></progress>
           </td>
           <td>
             <div class="flex gap-2">
               <button class="btn btn-primary btn-xs" onclick="openInventoryModal('@inventory.Id')">Details</button>
+              <button class="btn btn-outline btn-xs" onclick="switchToEditInventoryForm('@inventory.Id')">Edit</button>
             </div>
           </td>
         </tr>
@@ -102,5 +104,48 @@
         `;
         console.error('Error:', error);
       });
+  }
+
+  function switchToEditInventoryForm(id) {
+    // Determine which modal to use. Index.cshtml has create_inventory_modal.
+    // Dashboard might have its own or share this one.
+    const editModal = document.getElementById('create_inventory_modal') || document.getElementById('inventory_modal');
+    const detailsModal = document.getElementById('inventory_modal');
+    
+    // If we have a separate edit modal (like on Index page), close details first
+    if (editModal.id !== detailsModal.id && detailsModal.open) {
+      detailsModal.close();
+    }
+
+    const content = editModal.id === 'create_inventory_modal' 
+      ? document.getElementById('modal-content') 
+      : document.getElementById('modal_content');
+      
+    const title = editModal.id === 'create_inventory_modal'
+      ? document.getElementById('modal-title')
+      : null; // inventory_modal might not have a separate title element yet
+
+    if (title) title.innerText = "Edit Inventory Item";
+    content.innerHTML = '<div class="flex justify-center py-8"><span class="loading loading-spinner loading-lg text-primary"></span></div>';
+
+    if (!editModal.open) {
+      editModal.showModal();
+    }
+
+    fetch(`/Inventory/Edit/${id}`, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+      .then(r => r.text())
+      .then(html => {
+        content.innerHTML = html;
+        if (typeof setupFormSubmission === 'function') {
+          setupFormSubmission();
+        }
+      });
+  }
+
+  function handleInventoryCancel() {
+    const modal = document.getElementById('create_inventory_modal') || document.getElementById('inventory_modal');
+    modal.close();
   }
 </script>

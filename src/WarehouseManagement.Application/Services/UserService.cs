@@ -75,15 +75,22 @@ public class UserService : IUserService
   /// </summary>
   public async Task LoginUserAsync(LoginUserViewModel model)
   {
+    // Find the user by email first to get their actual UserName
+    var user = await _userManager.FindByEmailAsync(model.Email);
+    if (user == null)
+    {
+      throw new Exception("Invalid login attempt: User not found.");
+    }
+
     var result = await _signInManager.PasswordSignInAsync(
-        model.Email,
+        user.UserName!,
         model.Password,
         model.RememberMe,
         lockoutOnFailure: false);
 
     if (!result.Succeeded)
     {
-      throw new Exception("Invalid login attempt.");
+      throw new Exception("Invalid login attempt: Incorrect password.");
     }
   }
 

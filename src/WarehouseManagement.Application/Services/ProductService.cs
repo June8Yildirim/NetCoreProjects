@@ -66,18 +66,26 @@ public class ProductService : IProductService
   /// <summary>
   /// Fetches details for a single product.
   /// </summary>
-  public async Task<ProductByIdViewModel?> GetProductByIdAsync(Guid Id)
+  public async Task<ProductDetailsViewModel?> GetProductByIdAsync(Guid Id)
   {
     return await _context.Products
       .AsNoTracking()
       .Where(p => p.Id == Id)
-      .Select(p => new ProductByIdViewModel
+      .Select(p => new ProductDetailsViewModel
       {
         Id = p.Id,
         Name = p.Name,
         SKU = p.SKU,
         SupplierId = p.SupplierId,
-        ReorderLevel = p.ReorderLevel
+        ReorderLevel = p.ReorderLevel,
+        UnitCost = p.UnitCost ?? 0,
+        WeightLbs = p.WeightLbs ?? 0,
+        Category = p.Category ?? "Not Registered",
+        Barcode = p.Barcode ?? "Unknown",
+        SupplierName = p.Supplier.Name,
+        Inventories = p.Inventories,
+        StockTrackings = p.StockTrackings,
+        PurchaseOrderLines = p.PurchaseOrderLines
       })
       .FirstOrDefaultAsync();
   }
@@ -128,6 +136,55 @@ public class ProductService : IProductService
     };
 
     _context.Products.Add(product);
+    await _context.SaveChangesAsync();
+  }
+
+  public async Task<CreateProductViewModel?> GetProductForEditAsync(Guid id)
+  {
+    var product = await _context.Products
+        .AsNoTracking()
+        .FirstOrDefaultAsync(p => p.Id == id);
+
+    if (product == null) return null;
+
+    var suppliers = await _context.Suppliers
+        .AsNoTracking()
+        .Select(s => new SelectListItem
+        {
+          Value = s.Id.ToString(),
+          Text = s.Name
+        }).ToListAsync();
+
+    return new CreateProductViewModel
+    {
+      Id = product.Id,
+      Name = product.Name,
+      SKU = product.SKU,
+      ReorderLevel = product.ReorderLevel,
+      UnitCost = product.UnitCost,
+      WeightLbs = product.WeightLbs,
+      Category = product.Category,
+      Barcode = product.Barcode,
+      SupplierId = product.SupplierId,
+      Suppliers = suppliers
+    };
+  }
+
+  public async Task UpdateProductAsync(CreateProductViewModel model)
+  {
+    var product = await _context.Products.FindAsync(model.Id);
+    if (product == null) throw new Exception("Product not found");
+
+    product.Name = model.Name;
+    product.SKU = model.SKU;
+    product.ReorderLevel = model.ReorderLevel;
+    product.UnitCost = model.UnitCost;
+    product.WeightLbs = model.WeightLbs;
+    product.Category = model.Category;
+    product.Barcode = model.Barcode;
+    product.SupplierId = model.SupplierId;
+
+    _context.Products.Update(product);
     await _context.SaveChangesAsync();
   }
 }

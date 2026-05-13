@@ -10,7 +10,17 @@ public interface IWarehouseService
   /// <summary>
   /// Finds a specific warehouse by its ID for a detailed view.
   /// </summary>
-  Task<WarehouseByIdViewModel?> GetWarehouseByIdViewModelAsync(Guid Id);
+  Task<WarehouseDetailsViewModel?> GetWarehouseDetailsViewModelAsync(Guid Id);
+
+  /// <summary>
+  /// Prepares a ViewModel populated with existing warehouse data for editing.
+  /// </summary>
+  Task<CreateWarehouseViewModel?> GetWarehouseForEditAsync(Guid id);
+
+  /// <summary>
+  /// Updates an existing warehouse in the database.
+  /// </summary>
+  Task UpdateWarehouseAsync(CreateWarehouseViewModel model);
 
   /// <summary>
   /// Prepares an empty ViewModel for the Create Warehouse form.

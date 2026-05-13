@@ -1,7 +1,12 @@
 @model WarehouseManagement.Application.ViewModels.Product.Create.CreateProductViewModel
 
-<form asp-action="Create" method="post" id="createProductForm" class="space-y-4">
+<form asp-action="@(Model.Id.HasValue ? "Edit" : "Create")" method="post" id="createProductForm" class="space-y-4">
     <div asp-validation-summary="ModelOnly" class="alert alert-error mb-4"></div>
+
+    @if (Model.Id.HasValue)
+    {
+        <input type="hidden" asp-for="Id" />
+    }
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="form-control w-full">
@@ -72,7 +77,9 @@
     </div>
 
     <div class="modal-action mt-6">
-        <button type="button" onclick="create_product_modal.close()" class="btn btn-ghost">Cancel</button>
-        <button type="submit" class="btn btn-primary px-8">Save Product</button>
+        <button type="button" onclick="handleProductCancel()" class="btn btn-ghost">Cancel</button>
+        <button type="submit" class="btn btn-primary px-8">
+            @(Model.Id.HasValue ? "Update Product" : "Save Product")
+        </button>
     </div>
 </form>

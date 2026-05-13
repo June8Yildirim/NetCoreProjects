@@ -11,6 +11,11 @@ namespace WarehouseManagement.Application.ViewModels.Product.Create
   public class CreateProductViewModel
   {
     /// <summary>
+    /// The unique ID of the product. Only populated during Edit operations.
+    /// </summary>
+    public Guid? Id { get; set; }
+
+    /// <summary>
     /// The display name of the product (e.g. "Standard Crate").
     /// </summary>
     [Required]

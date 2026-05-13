@@ -28,19 +28,29 @@
       <span class="opacity-60">Warehouse Location:</span>
       <span class="font-semibold">@Model.WarehouseName</span>
     </div>
-    @{
-      var available = Model.QuantityOnHand - Model.QuantityAllocated;
-      var status = available > 20 ? "Healthy" : (available > 0 ? "Low Stock" : "Critical");
-      var statusColor = available > 20 ? "text-success" : (available > 0 ? "text-warning" : "text-error");
-    }
+
     <div class="flex justify-between text-sm">
       <span class="opacity-60">Available Stock:</span>
-      <span class="font-bold @statusColor">@available (@status)</span>
+      <span class="font-bold @(Model.NeedsReorder ? "text-error" : "text-success")">
+        @Model.AvailableQuantity
+        @if (Model.NeedsReorder)
+        {
+          <span class="badge badge-error badge-xs ml-1">REORDER</span>
+        }
+      </span>
     </div>
-  </div>
+
+    @if (Model.MinSafetyStock.HasValue)
+    {
+      <div class="flex justify-between text-xs opacity-60">
+        <span>Min Safety Stock:</span>
+        <span>@Model.MinSafetyStock</span>
+      </div>
+    }
+    </div>
 
   <div class="modal-action">
-    <button class="btn btn-outline btn-sm">Adjust</button>
+    <button class="btn btn-outline btn-sm" onclick="switchToEditInventoryForm('@Model.Id')">Edit</button>
     <button class="btn btn-primary btn-sm" onclick="inventory_modal.close()">Close</button>
   </div>
 </div>

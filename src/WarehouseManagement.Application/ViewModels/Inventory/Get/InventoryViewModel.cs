@@ -9,5 +9,7 @@ public class InventoryViewModel
   public Guid WarehouseId { get; set; }
   public int QuantityOnHand { get; set; }
   public int QuantityAllocated { get; set; }
-
+  public int? MinSafetyStock { get; set; }
+  public int AvailableQuantity { get; set; }
+  public bool NeedsReorder { get; set; }
 }

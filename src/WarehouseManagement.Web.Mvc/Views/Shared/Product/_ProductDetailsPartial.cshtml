@@ -1,15 +1,35 @@
-@model WarehouseManagement.Application.ViewModels.ProductByIdViewModel;
+@model WarehouseManagement.Application.ViewModels.ProductDetailsViewModel;
 
 <div class="space-y-6">
   <div>
     <h2 class="text-2xl font-bold text-primary">@Model.Name</h2>
-    <div class="badge badge-outline badge-sm mt-1">@Model.Name</div>
+    <div class="badge badge-outline badge-sm mt-1">@Model.SupplierName</div>
   </div>
 
-  <div class="grid grid-cols-2 gap-4">
+  <div class="grid grid-cols-3 gap-4">
     <div class="bg-base-200 p-4 rounded-lg">
       <div class="text-xs opacity-60 uppercase font-bold">Reorder Level</div>
       <div class="text-3xl font-black">@Model.ReorderLevel</div>
+    </div>
+    <div class="bg-base-200 p-4 rounded-lg">
+      <div class="text-xs opacity-60 uppercase font-bold">Unit Cost</div>
+      <div class="text-3xl font-black">@Model.UnitCost</div>
+    </div>
+    <div class="bg-base-200 p-4 rounded-lg">
+      <div class="text-xs opacity-60 uppercase font-bold">Weight Lbs</div>
+      <div class="text-3xl font-black">@Model.WeightLbs</div>
+    </div>
+    <div class="bg-base-200 p-4 rounded-lg">
+      <div class="text-xs opacity-60 uppercase font-bold">Category</div>
+      <div class="text-xl font-black">@Model.Category</div>
+    </div>
+    <div class="bg-base-200 p-4 rounded-lg">
+      <div class="text-xs opacity-60 uppercase font-bold">Barcode</div>
+      <div class="text-xl font-black">@Model.Barcode</div>
+    </div>
+    <div class="bg-base-200 p-4 rounded-lg">
+      <div class="text-xs opacity-60 uppercase font-bold">Purchase Orders Count</div>
+      <div class="text-xl font-black">@Model.PurchaseOrderLines.Count</div>
     </div>
   </div>
 
@@ -23,7 +43,7 @@
   </div>
 
   <div class="modal-action">
-    <button class="btn btn-outline btn-sm">Adjust</button>
-    <button class="btn btn-primary btn-sm" onclick="inventory_modal.close()">Close</button>
+    <button class="btn btn-outline btn-sm" onclick="switchToEditProductForm('@Model.Id')">Edit</button>
+    <button class="btn btn-primary btn-sm" onclick="document.getElementById('product_modal').close()">Close</button>
   </div>
 </div>

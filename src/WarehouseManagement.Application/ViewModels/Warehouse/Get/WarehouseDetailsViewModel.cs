@@ -4,7 +4,7 @@ using WarehouseManagement.Models;
 namespace WarehouseManagement.Application.ViewModels
 {
 
-  public class WarehouseByIdViewModel
+  public class WarehouseDetailsViewModel
   {
     public Guid Id { get; set; }
     public string Name { get; set; } = string.Empty;

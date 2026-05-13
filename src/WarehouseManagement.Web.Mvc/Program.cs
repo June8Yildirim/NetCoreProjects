@@ -27,7 +27,11 @@ builder.Services.AddDbContext<WarehouseDbContext>(options =>
 
 builder.Services.AddIdentity<User, IdentityRole<Guid>>(opt =>
 {
-  opt.Password.RequireDigit = true;
+  opt.Password.RequireDigit = false;
+  opt.Password.RequiredLength = 4;
+  opt.Password.RequireNonAlphanumeric = false;
+  opt.Password.RequireUppercase = false;
+  opt.Password.RequireLowercase = false;
   opt.User.RequireUniqueEmail = true;
 })
 .AddEntityFrameworkStores<WarehouseDbContext>()

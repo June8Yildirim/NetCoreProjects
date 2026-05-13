@@ -5,6 +5,8 @@ namespace WarehouseManagement.Application.ViewModels.Warehouse.Create
 
   public class CreateWarehouseViewModel
   {
+    public Guid? Id { get; set; }
+
     [Required]
     [Display(Name = "Name")]
     public string Name { get; set; } = string.Empty;
