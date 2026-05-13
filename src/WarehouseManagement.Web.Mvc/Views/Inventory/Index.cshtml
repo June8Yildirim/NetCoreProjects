@@ -35,89 +35,59 @@
 
 @section Scripts {
   <script>
-    function openCreateModal() {
+    async function openCreateModal() {
       const modal = document.getElementById('create_inventory_modal');
-      const content = document.getElementById('modal-content');
       const title = document.getElementById('modal-title');
 
-      // Reset content to spinner and set title
-      content.innerHTML = '<div class="flex justify-center py-8"><span class="loading loading-spinner loading-lg text-primary"></span></div>';
       title.innerText = "Add New Inventory Item";
-      
+      wms.showLoader('modal-content');
       modal.showModal();
 
-      fetch('@Url.Action("Create")', {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-        .then(response => {
-          if (!response.ok) {
-            if (response.status === 403) {
-              throw new Error("You do not have permission to add inventory.");
-            }
-            throw new Error("Failed to load the form.");
-          }
-          return response.text();
-        })
-        .then(html => {
-          content.innerHTML = html;
-          setupFormSubmission();
-        })
-        .catch(error => {
-          content.innerHTML = `<div class="alert alert-error"><span>${error.message}</span></div>`;
-        });
+      try {
+        const html = await wms.request('@Url.Action("Create")');
+        document.getElementById('modal-content').innerHTML = html;
+        setupFormSubmission();
+      } catch (error) {
+        wms.showError('modal-content', error.message);
+      }
     }
 
-    function switchToProductForm() {
-      const content = document.getElementById('modal-content');
+    async function switchToProductForm() {
       const title = document.getElementById('modal-title');
-
-      content.innerHTML = '<div class="flex justify-center py-8"><span class="loading loading-spinner loading-lg text-primary"></span></div>';
       title.innerText = "Quick Add New Product";
+      wms.showLoader('modal-content', 'Loading product form...');
 
-      fetch('/Product/Create', {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-        .then(r => r.text())
-        .then(html => {
-          content.innerHTML = html;
-          setupProductFormSubmission();
-        })
-        .catch(error => {
-          content.innerHTML = '<div class="alert alert-error"><span>Failed to load the product form.</span></div>';
-        });
+      try {
+        const html = await wms.request('/Product/Create');
+        document.getElementById('modal-content').innerHTML = html;
+        setupProductFormSubmission();
+      } catch (error) {
+        wms.showError('modal-content', 'Failed to load the product form.');
+      }
     }
 
     function handleProductCancel() {
-      // If we are in the "Quick Add" flow, go back to the inventory form
       openCreateModal();
     }
 
-    function switchToEditInventoryForm(id) {
+    async function switchToEditInventoryForm(id) {
       const modal = document.getElementById('create_inventory_modal');
-      const content = document.getElementById('modal-content');
       const title = document.getElementById('modal-title');
 
       title.innerText = "Edit Inventory Item";
-      content.innerHTML = '<div class="flex justify-center py-8"><span class="loading loading-spinner loading-lg text-primary"></span></div>';
+      wms.showLoader('modal-content', 'Preparing edit form...');
 
       if (!modal.open) {
         modal.showModal();
       }
 
-      fetch(`/Inventory/Edit/${id}`, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-        .then(r => r.text())
-        .then(html => {
-          content.innerHTML = html;
-          setupFormSubmission();
-        });
+      try {
+        const html = await wms.request(`/Inventory/Edit/${id}`);
+        document.getElementById('modal-content').innerHTML = html;
+        setupFormSubmission();
+      } catch (error) {
+        wms.showError('modal-content', 'Failed to load the edit form.');
+      }
     }
 
     function handleInventoryCancel() {
@@ -128,36 +98,32 @@
       const form = document.getElementById('createProductForm');
       if (!form) return;
 
-      form.addEventListener('submit', function (e) {
+      form.addEventListener('submit', async function (e) {
         e.preventDefault();
         const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerText;
 
-        fetch(form.action, {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
-        })
-          .then(response => {
-            if (response.ok) {
-              return response.json().catch(() => response.text());
-            }
-            throw new Error('Network response was not ok.');
-          })
-          .then(data => {
-            if (data.success) {
-              // Product created! Now go back to the inventory form
-              openCreateModal();
-            } else {
-              // Validation failed, show errors
-              document.getElementById('modal-content').innerHTML = data;
-              setupProductFormSubmission();
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
+        try {
+          submitBtn.disabled = true;
+          submitBtn.innerText = 'Saving...';
+
+          const data = await wms.request(form.action, {
+            method: 'POST',
+            body: formData
           });
+
+          if (data.success) {
+            openCreateModal();
+          } else {
+            document.getElementById('modal-content').innerHTML = data;
+            setupProductFormSubmission();
+          }
+        } catch (error) {
+          alert('Error saving product: ' + error.message);
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalBtnText;
+        }
       });
     }
 
@@ -165,35 +131,32 @@
       const form = document.getElementById('createInventoryForm');
       if (!form) return;
 
-      form.addEventListener('submit', function (e) {
+      form.addEventListener('submit', async function (e) {
         e.preventDefault();
-
         const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerText;
 
-        fetch(form.action, {
-          method: 'POST',
-          body: formData,
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
-        })
-          .then(response => {
-            if (response.ok) {
-              return response.json().catch(() => response.text());
-            }
-            throw new Error('Network response was not ok.');
-          })
-          .then(data => {
-            if (data.success) {
-              location.reload(); 
-            } else {
-              document.getElementById('modal-content').innerHTML = data;
-              setupFormSubmission();
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
+        try {
+          submitBtn.disabled = true;
+          submitBtn.innerText = 'Saving...';
+
+          const data = await wms.request(form.action, {
+            method: 'POST',
+            body: formData
           });
+
+          if (data.success) {
+            location.reload(); 
+          } else {
+            document.getElementById('modal-content').innerHTML = data;
+            setupFormSubmission();
+          }
+        } catch (error) {
+          alert('Error saving inventory: ' + error.message);
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalBtnText;
+        }
       });
     }
   </script>
